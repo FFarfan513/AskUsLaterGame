@@ -1,20 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BlackCircleController : MonoBehaviour {
+public class MoveTo : MonoBehaviour {
 	Vector3 currentPosition;
 	Vector3 moveDirection;
-	public float moveSpeed = 5.0f;
-
+	public GameObject followMe;
+	public float moveSpeed;
+	public bool isEnemy;
+	
 	void Start () {
 		currentPosition = transform.position;
 	}
 	
 	void Update () {
 		currentPosition = transform.position;
-		Vector3 moveHere = ClickToMoveBlack.moveToHereBlack;
+		Vector3 moveHere = followMe.transform.position;
 		float distanceBetween = Vector3.Distance(currentPosition,moveHere);
-		//Debug.Log (moveHere + "vs" + currentPosition);
 		if (distanceBetween < 0.1f) {
 			transform.position = moveHere;
 		}
@@ -26,6 +27,18 @@ public class BlackCircleController : MonoBehaviour {
 			
 			Vector3 target = moveDirection * moveSpeed + currentPosition;
 			transform.position = Vector3.Lerp(currentPosition, target, Time.deltaTime);
+		}
+	}
+
+	void OnTriggerEnter2D( Collider2D other ) {
+		Vector3 trajectory = followMe.transform.position - transform.position;
+		trajectory.x = -trajectory.x;
+		trajectory.y = -trajectory.y;
+		trajectory = Vector3.ClampMagnitude(trajectory,0.1f); ///this makes us bounce back a bit, so that we can't phase into the wall
+		currentPosition += trajectory;
+		transform.position = currentPosition;
+		if (!isEnemy) {
+			followMe.transform.position = transform.position;
 		}
 	}
 }

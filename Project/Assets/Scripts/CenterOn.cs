@@ -13,12 +13,11 @@ public class CenterOn : MonoBehaviour {
 	private float cameraXSpeed;
 	private float cameraYSpeed;
 	public float speed;
-	public float edge;
+	private float edge;
 
 	void Start() {
 		cameraXSpeed = 0;
 		cameraYSpeed = 0;
-		speed = 0.085f;
 		edge = 0.58f; //edge keeps track of the relative percentage of the screen we're allowed to move in
 	}
 
