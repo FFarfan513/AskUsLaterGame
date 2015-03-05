@@ -12,6 +12,7 @@ public class ClickToMove : MonoBehaviour {
 	}
 	
 	void Update () {
+			//once the mouseButton is pressed, the object goes directly to that position
 			if (Input.GetMouseButtonDown(mouseButton)) {
 			var mousePos = Input.mousePosition;
 			mousePos.z=distanceFromCamera;

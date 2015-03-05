@@ -1,10 +1,20 @@
 Commits
 
-2/24
+2/24 - Fristian
 Initial prototype. Basic movement with a divider in the middle. Enabled the two cameras.
 
-2/27
+2/27 - Fristian
 Removed the divider, and added walls with collisions. Changed FOV on both cameras to 110, character speed for both Black and White to 6, and camera speed to 0.11. Combined the Black and White specific scripts together; we now have a total of 3 scripts at the moment.
 I also decided not to add in a time delay after running into walls for two reasons (one it was very complicated, two, it didn't seem too fun after I tried out a semi-working version). If anything, maybe we could add it back in later, but I don't think we need to (I have a feeling the game will be hard enough).
 Note: There are a lot of walls at the moment that are just border walls. I'm not sure exactly how we'll handle the wall situation later, but what I have now is just temporary.
+
+
+3/5 - Fristian
+Changed all of the black and white sprites, and the grey sprites to only be white. This is so that we can control exactly how much we want to greyscale anything not exactly white or black by giving it a white sprite and changing the color in the SpriteRenderer's color slider. Something with 128/128/128 is a grey exactly between black and white, something 255/255/255 is fully white, and something 0/0/0 is fully black. In doing this, I also added in the backgrounds. They aren't both exactly white and black to ease the eyes a bit. The black background is currently 13/13/13 while the white background is currently 242/242/242. Walls are 128/128/128 and the divider in the middle as well as the click X's are 84/84/84.
+I also added a new Sprite Sorting Layer. So our layers are now Background < Below < Player. The walls and enemies should use the Below layer. The background and players should obviously use the Background and Player layers respectively.
+Changed all of the Walls to be instances of a prefab Wall. Will that even make things easier or not? I don't really know, but it's something I figured should be done anyway.
+Got rid of that isEnemy boolean in the script MoveTo. This is because I originally used it to not have the X move backwards if an enemy hits a wall (only if you hit a wall, to simulate the player bouncing backwards), but I realized now that the enemies need to move with their own script which will incorporate A*, so I won't be using MoveTo for enemies anyway. I also added a small amount of comments to some of the scripts.
+Added one test enemy on the Black Player's side. This enemy uses the MoveTo script for now. We'll replace it with a specific enemy movement script that will have A* pathfinding and will respond to being clicked on eventually. However, since that's basically homework 2, I haven't done that yet.
+Note: It seems that sometimes when I save the scene it prints to the console: "Cleaning up leaked objects in scene since no game object, component or manager is referencing them. X has been leaked Y times." I have a feeling this is because of the prefabs, but I don't know exactly.
+Note again: I like to name objects in a certain way if you haven't noticed. Since there's usually 2 copies of any object we make due to the nature of the split screen, I'll usually name it WhateverBlack and WhateverWhite (or WhateverB and WhateverW if the name gets really long), so that if we sort by alphabetical, all related objects should be next to each other. In this way, despite the background color, I refer to the left side as "Black" and the right side as "White" because of the Player's color, as in, left is Black's side and right is White's side. If we could keep up this naming scheme in the future, that'd be swell.
 

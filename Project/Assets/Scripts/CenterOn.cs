@@ -31,6 +31,7 @@ public class CenterOn : MonoBehaviour {
 		float yMin = (new Vector3(0,(1-edge),cameraZ)).y;
 		Vector3 relativePos = cam.WorldToViewportPoint(character.transform.position);
 
+		//if your position relative to the screen is past a certain point, start moving the camera
 		if ( relativePos.x > xMax ) {
 			cameraXSpeed = speed;
 		}
