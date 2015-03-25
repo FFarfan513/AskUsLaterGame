@@ -5,13 +5,14 @@ public class MoveTo : MonoBehaviour {
 	Vector3 currentPosition;
 	Vector3 moveDirection;
 	public GameObject followMe;
-	public GameObject myRipplePrefab;
-	public float moveSpeed, rippleSpeed;
-	private float timestamp;
+	//public GameObject myRipplePrefab;
+	public float moveSpeed;
+	//public float rippleSpeed;
+	//private float timestamp;
 
 	void Start () {
 		currentPosition = transform.position;
-		timestamp = 0f;
+		//timestamp = 0f;
 	}
 	
 	void Update () {
@@ -31,10 +32,12 @@ public class MoveTo : MonoBehaviour {
 			
 			Vector3 target = moveDirection * moveSpeed + currentPosition;
 			transform.position = Vector3.Lerp(currentPosition, target, Time.deltaTime);
+			/*
 			if (Time.time >= timestamp) {
 				Invoke("createRipple", 0.001F);
 				timestamp = Time.time + rippleSpeed;
 			}
+			*/
 		}
 	}
 
@@ -51,9 +54,11 @@ public class MoveTo : MonoBehaviour {
 		followMe.transform.position = transform.position;
 	}
 
+	/*
 	void createRipple() {
 		if (myRipplePrefab != null) {
 			Instantiate(myRipplePrefab, transform.position, Quaternion.identity);
 		}
 	}
+	*/
 }
