@@ -13,11 +13,12 @@ public class EnemyController : MonoBehaviour {
 	*/
 	
 	public GameObject followMe;
+	public GameObject myParentSpwaner;
 	public float moveSpeed;
 	public int deadlyMouseButton;
 	public int frozenSeconds;
 	private int colliderSize = 2; //should always be GenerateGraph's spacing - 1
-	private string playerTag;
+	public string playerTag;
 	
 	private List<int> path;
 	private State me;
@@ -37,7 +38,7 @@ public class EnemyController : MonoBehaviour {
 	
 	void Update() {
 		if (me != State.Paralyzed) {
-			Debug.DrawLine (transform.position,followMe.transform.position, Color.red);
+			//Debug.DrawLine (transform.position,followMe.transform.position, Color.red);
 			RaycastHit2D hit = Physics2D.Linecast (transform.position, followMe.transform.position, ~nodeAndEnemy);
 			if ((hit.collider == null) || (hit.collider.name==followMe.name || hit.collider.tag == playerTag))
 				me = State.HasSight;
@@ -219,6 +220,8 @@ public class EnemyController : MonoBehaviour {
 	
 	//Giving this it's own function to add room for death animations and sounds.
 	void KillMe() {
+		if (myParentSpwaner != null)
+			myParentSpwaner.GetComponent<EnemySpawnerController>().childrenSpawned--;
 		DestroyObject(gameObject);
 	}
 }
