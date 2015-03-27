@@ -37,9 +37,9 @@ public class EnemyController : MonoBehaviour {
 	
 	void Update() {
 		if (me != State.Paralyzed) {
-			//Debug.DrawLine (transform.position,followMe.transform.position, Color.red);
+			Debug.DrawLine (transform.position,followMe.transform.position, Color.red);
 			RaycastHit2D hit = Physics2D.Linecast (transform.position, followMe.transform.position, ~nodeAndEnemy);
-			if ((hit.collider != null) && (hit.collider.name==followMe.name || hit.collider.tag == playerTag))
+			if ((hit.collider == null) || (hit.collider.name==followMe.name || hit.collider.tag == playerTag))
 				me = State.HasSight;
 			else
 				me = State.Pathing;
