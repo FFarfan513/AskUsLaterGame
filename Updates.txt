@@ -28,6 +28,9 @@ For what I did myself, I was told by the professor to copy the current scene int
 I did a lot, so I hope I don't forget something. Not all of it will affect other scenes, but some of it might.
 TLDR: I added a graph, enemies, and made them move around in it.
 
+3/27 - Will
+Small update to give everyone a cleaner start. Removed Scipt component on Middle camera. Disabled Animation and Animator Controller on Ripple prefabs. Added Animations and Audio folders (empty).
+
 Unity things:
 I made some progress in understanding Unity's Layers and LayerMasks. When using a raycast, you can choose to only raycast colliders on a certain layer, or colliders not on a certain layer. To do this, the object needs to have that layer set in their inspector, and then you need to specify that layer in the code. I used two of the User Layers for Nodes and Enemies. All nodes have the Node layer, and all enemies should have the Enemy layer. This is so that enemies can raycast from themselves and ignore both their own colliders, and the colliders of the nodes. To get the layer for any object except those using the Node Layer (basically, using a ray/line/circle cast on anything but a node) you can use '~LayerMask.GetMask ("Node")' minus the single quotes. This is important, so remember this.
 I also made the players tag's match up with PlayerBlack and PlayerWhite.
@@ -36,5 +39,5 @@ And I don't know about you guys, but for me, the Wall prefab was a little messed
 
 Other things:
 I created two new scripts, GenerateGraph and EnemeyController.
-GenerateGraph creates a graph of ndoes. These nodes are gameObjects that only have circleColliders on them. It creates two spaces of nodes where they are generated in a rectangular pattern based off of a set left/top/right/bottom boundary, which is set in the Unity Editor as two float arrays. The nodes that are close to each other are then connected, giving us one big disconnected graph (a graph where not every node is connected to each other).
+GenerateGraph creates a graph of nodes. These nodes are gameObjects that only have circleColliders on them. It creates two spaces of nodes where they are generated in a rectangular pattern based off of a set left/top/right/bottom boundary, which is set in the Unity Editor as two float arrays. The nodes that are close to each other are then connected, giving us one big disconnected graph (a graph where not every node is connected to each other).
 EnemyController implements the Finite State Machine behavior on the enemy. The state is represented by an enum. The enemy continuously casts a ray towards it's target. If the target's visible, it will seek directly towards it. If not, it'll calculate an A* path towards it, recalculating it if the target moves towards a new node. If clicked on with the correct mouse button, it'll be in paralyzed state. After a few seconds, it will unfreeze and continue to try and move towards the player.
