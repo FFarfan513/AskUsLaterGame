@@ -5,8 +5,10 @@ public class MoveTo : MonoBehaviour {
 	Vector3 currentPosition;
 	Vector3 moveDirection;
 	public GameObject followMe;
-	//public GameObject myRipplePrefab;
 	public float moveSpeed;
+	private float bounceSpeed = 0.2f;
+	
+	//public GameObject myRipplePrefab;
 	//public float rippleSpeed;
 	//private float timestamp;
 
@@ -25,8 +27,7 @@ public class MoveTo : MonoBehaviour {
 			transform.position = moveHere;
 		}
 		else {
-			Vector3 moveToward = moveHere;
-			moveDirection = moveToward - currentPosition;
+			moveDirection = moveHere - currentPosition;
 			moveDirection.z = 0;
 			moveDirection.Normalize();
 			
@@ -43,15 +44,16 @@ public class MoveTo : MonoBehaviour {
 
 	void OnTriggerEnter2D( Collider2D other ) {
 		//this makes us bounce back a bit, so that we can't phase into the wall
-		//specifically, we bounce back at .1 speed
-		Vector3 trajectory = followMe.transform.position - transform.position;
-		trajectory.x = -trajectory.x;
-		trajectory.y = -trajectory.y;
-		trajectory = Vector3.ClampMagnitude(trajectory,0.1f);
-		currentPosition += trajectory;
-		transform.position = currentPosition;
-		//this moves the target's position (the X) to where we are now, so that we don't keep moving after we bounce.
-		followMe.transform.position = transform.position;
+		if (other.tag == "Wall") {
+			Vector3 trajectory = followMe.transform.position - transform.position;
+			trajectory.x = -trajectory.x;
+			trajectory.y = -trajectory.y;
+			trajectory = Vector3.ClampMagnitude(trajectory, bounceSpeed);
+			currentPosition += trajectory;
+			transform.position = currentPosition;
+			//this moves the target's position (the X) to where we are now, so that we don't keep moving after we bounce.
+			followMe.transform.position = transform.position;
+		}
 	}
 
 	/*
