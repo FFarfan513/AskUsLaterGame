@@ -30,6 +30,10 @@ TLDR: I added a graph, enemies, and made them move around in it.
 
 3/27 - Will
 Small update to give everyone a cleaner start. Removed Scipt component on Middle camera. Disabled Animation and Animator Controller on Ripple prefabs. Added Animations and Audio folders (empty).
+Completed Enemy Spawner, added tag for Enemies.
+
+3/28 - Will
+Added a demo scene, changed a few numbers for the EnemySpawner prefab. Demo scene needs testing and feedback before the presentation (it is definately not final at the moment).
 
 Unity things:
 I made some progress in understanding Unity's Layers and LayerMasks. When using a raycast, you can choose to only raycast colliders on a certain layer, or colliders not on a certain layer. To do this, the object needs to have that layer set in their inspector, and then you need to specify that layer in the code. I used two of the User Layers for Nodes and Enemies. All nodes have the Node layer, and all enemies should have the Enemy layer. This is so that enemies can raycast from themselves and ignore both their own colliders, and the colliders of the nodes. To get the layer for any object except those using the Node Layer (basically, using a ray/line/circle cast on anything but a node) you can use '~LayerMask.GetMask ("Node")' minus the single quotes. This is important, so remember this.
