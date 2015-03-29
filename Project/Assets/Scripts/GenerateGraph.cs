@@ -6,13 +6,13 @@ using System.Linq;
 public class GenerateGraph : MonoBehaviour {
 	public float[] leftRightUpDown1 = new float[4];
 	public float[] leftRightUpDown2 = new float[4];
-	public float spacing;
-	public float radius;
+	public float spacing; //keeping this at 3 is okay I think.
+	private float radius = 0.9f;
 	public GameObject nodePrefab;
-
+	
 	/*I'm not sure whether I want the list of nodes to be a List of Vector3's, with the index indicating
 	the node it represents, of a Dictionary(HashTable). For now I'll roll with Dictionary because it
-	should probably be faster in theory, but I'll leave the option of a List open and try them both.
+	should probably be faster in theory, but I'll leave the option of a List open through comments
 	*/
 	////public static List<Vector3> nodeVectors;.
 	public static Dictionary <int,Vector3> nodes;
@@ -24,7 +24,7 @@ public class GenerateGraph : MonoBehaviour {
 	
 	private bool showMe;
 	public static bool graphLoaded;
-
+	
 	void Start () {
 		////nodeVectors = new List<Vector3>();
 		nodes = new Dictionary<int,Vector3>();
@@ -34,7 +34,7 @@ public class GenerateGraph : MonoBehaviour {
 		ConnectGraph();
 		//PrintGraph ();
 	}
-
+	
 	void CreateNodes(float[] leftRightUpDown) {
 		//Be careful of float rounding error!
 		float xcurr = leftRightUpDown[0];
@@ -66,21 +66,21 @@ public class GenerateGraph : MonoBehaviour {
 			}
 		}
 	}
-
+	
 	void ConnectGraph() {
 		graph = new Dictionary<int, List<int> >(nodes.Count);
 		Vector3 left  = new Vector3 (-spacing, 0, 0);
-		Vector3 right = new Vector3 (spacing, 0, 0);
-		Vector3 up    = new Vector3 (0, spacing, 0);
+		Vector3 right = new Vector3 (spacing,  0, 0);
+		Vector3 up    = new Vector3 (0, spacing,  0);
 		Vector3 down  = new Vector3 (0, -spacing, 0);
-
+		
 		/*////for (int i=0; i < nodeVectors.Count; i++) {
-			////Vector3 pos = nodeVectors[i];
+		////Vector3 pos = nodeVectors[i];
 		*////
 		foreach (var node in nodes) {
 			Vector3 pos = node.Value;
 			connections = new List<int>();
-
+			
 			//Look at all 8 standard directions, to see if there's a node there.
 			//If so, add that node to this node's adjacency list.
 			Lookup(pos, pos+left+up);
@@ -98,17 +98,19 @@ public class GenerateGraph : MonoBehaviour {
 	}
 	
 	void Lookup(Vector3 pos, Vector3 test) {
-		RaycastHit2D obstruct = Physics2D.Linecast(pos,test,~LayerMask.GetMask ("Node"));
+		//checks if there is an object in the way of a connection, and if there is, don't put a connection there.
+		Vector3 dist = test - pos;
+		RaycastHit2D obstruct = Physics2D.CircleCast(pos, 1f, dist, dist.magnitude, ~LayerMask.GetMask ("Node"));
+		
 		////if ((obstruct.collider==null || obstruct.collider.tag != "Wall") && nodeVectors.Contains(test))
-			////connections.Add(nodeVectors.IndexOf(test));
+		////connections.Add(nodeVectors.IndexOf(test));
 		if ((obstruct.collider==null || obstruct.collider.tag != "Wall") && nodes.ContainsValue (test)) {
-			//int nodeNum = nodes.FirstOrDefault(x => x.Value == test).Key;
 			int nodeNum;
-			sedon.TryGetValue (test, out nodeNum);
-			connections.Add (nodeNum);
+			if (sedon.TryGetValue (test, out nodeNum))
+				connections.Add (nodeNum);
 		}
 	}
-
+	
 	/*void OnDrawGizmos() {
 		//This draws the paths between the nodes.
 		if (graphLoaded && showMe) {
@@ -137,7 +139,7 @@ public class GenerateGraph : MonoBehaviour {
 			}
 		}
 	}
-
+	
 	void Update() {
 		if (Input.GetKeyDown (KeyCode.Z))
 			showMe = !showMe;
@@ -150,7 +152,7 @@ public class GenerateGraph : MonoBehaviour {
 		}
 		*/
 	}
-
+	
 	void PrintGraph() {
 		foreach (var el in graph) {
 			string s = "[";

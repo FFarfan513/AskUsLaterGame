@@ -17,7 +17,8 @@ public class EnemyController : MonoBehaviour {
 	public float moveSpeed;
 	public int deadlyMouseButton;
 	public int frozenSeconds;
-	private int colliderSize = 2; //should always be GenerateGraph's spacing - 1
+	public float nodeDetectionRadius = 2.5f;
+	private float sightRadius; //how thick our enemy's line of sight is.
 	public string playerTag;
 	
 	private List<int> path;
@@ -30,6 +31,8 @@ public class EnemyController : MonoBehaviour {
 	void Start() {
 		path = new List<int>();
 		me = State.Searching;
+		SpriteRenderer s = renderer as SpriteRenderer;
+		sightRadius = s.bounds.extents.magnitude + 0.05f;
 		if (deadlyMouseButton == 1)
 			playerTag = "PlayerBlack";
 		else if (deadlyMouseButton == 0)
@@ -38,44 +41,67 @@ public class EnemyController : MonoBehaviour {
 	
 	void Update() {
 		if (me != State.Paralyzed) {
-			//Debug.DrawLine (transform.position,followMe.transform.position, Color.red);
-			RaycastHit2D hit = Physics2D.Linecast (transform.position, followMe.transform.position, ~nodeAndEnemy);
+			Vector2 currentPos = new Vector2(transform.position.x, transform.position.y);
+			Vector2 followPos = new Vector2(followMe.transform.position.x, followMe.transform.position.y);
+			Vector2 dist = followPos-currentPos;
+			RaycastHit2D hit = Physics2D.CircleCast(currentPos, sightRadius, dist, dist.magnitude, ~nodeAndEnemy);
+			//Debug.DrawRay (currentPos,dist,Color.red);
 			if ((hit.collider == null) || (hit.collider.name==followMe.name || hit.collider.tag == playerTag))
 				me = State.HasSight;
 			else
 				me = State.Pathing;
 		}
 		switch (me) {
-			case State.HasSight:
-				if (path.Count > 0)
-					path.Clear ();
-				DumbSeek(followMe.transform.position);
-				break;
-			case State.Pathing:
-				int youMoved = -1, start, end;
-				Collider2D myCircle = Physics2D.OverlapCircle(transform.position, colliderSize, nodeMask);
-				Collider2D targetCircle = Physics2D.OverlapCircle(followMe.transform.position, colliderSize, nodeMask);
-				//if there is no path yet
-				if (myCircle!=null && targetCircle!= null) {
-					if (path.Count == 0) {
-						if (int.TryParse(myCircle.name, out start) && int.TryParse(targetCircle.name, out end)) {
-							path = Astar(start, end);
-						}
+		case State.HasSight:
+			path.Clear ();
+			DumbSeek(followMe.transform.position);
+			break;
+		case State.Pathing:
+			int youMoved = -1, start, end;
+			Collider2D myCircle =
+				FindClosestTo(Physics2D.OverlapCircleAll(transform.position, nodeDetectionRadius, nodeMask), followMe.transform.position);
+			Collider2D targetCircle =
+				FindClosestTo(Physics2D.OverlapCircleAll(followMe.transform.position, nodeDetectionRadius, nodeMask), followMe.transform.position);
+			//if there is no path yet
+			if (myCircle!=null && targetCircle!= null) {
+				if (path.Count == 0) {
+					if (int.TryParse(myCircle.name, out start) && int.TryParse(targetCircle.name, out end)) {
+						path = Astar(start, end);
 					}
-					//else if closest node to player has changed
-					else if (int.TryParse(targetCircle.name, out youMoved) && (youMoved != path[0]) && !path.Contains (youMoved)) {
-						path = Astar(path[path.Count-1], youMoved);
-					}
-					MoveThroughPath();
-					//PrintPath(path);
 				}
-				break;
-			case State.Paralyzed:
-				break;
-			default:
-				print("ERROR! SOMEHOW!\n");
-				break;
+				//else if closest node to player has changed
+				else if (int.TryParse(targetCircle.name, out youMoved) && (youMoved != path[0]) && !path.Contains (youMoved)) {
+					path = Astar(path[path.Count-1], youMoved);
+				}
+				MoveThroughPath();
+				//PrintPath(path);
+			}
+			break;
+		case State.Paralyzed:
+			break;
+		default:
+			print("ERROR! The state was somehow set to something other than it's enum values.\n");
+			break;
 		}
+	}
+	
+	//This can actually be used for things other than just finding the closest node to an object
+	//It takes in a list of colliders and returns the collider closest to a target position
+	Collider2D FindClosestTo(Collider2D[] hits, Vector3 target) {
+		if (hits.Length <= 0)
+			return null;
+		Collider2D closest = hits[0];
+		if (hits.Length > 1) {
+			float min = Vector3.Distance (closest.transform.position, target);
+			for (int i=1; i<hits.Length; i++) {
+				float dist = Vector3.Distance (hits[i].transform.position, target);
+				if (dist < min) {
+					min = dist;
+					closest = hits[i];
+				}
+			}
+		}
+		return closest;
 	}
 	
 	
@@ -143,7 +169,7 @@ public class EnemyController : MonoBehaviour {
 			}
 		}
 		//Under normal circumstances, this shouldn't happen.
-		Debug.Log ("AN ERROR HAS OCCURRED\n");
+		Debug.Log ("I can't reach there using A*! Perhaps the start and end nodes of the path are the cause.\n");
 		return (new List<int>());
 	}
 	
@@ -176,13 +202,15 @@ public class EnemyController : MonoBehaviour {
 	
 	void MoveThroughPath() {
 		//this function always moves to the last node in the path, and removes it when it reaches it.
-		int step = path[path.Count-1];
-		////Vector3 dest = GenerateGraph.nodeVectors[step];
-		Vector3 dest;
-		GenerateGraph.nodes.TryGetValue (step, out dest);
-		DumbSeek(dest);
-		if (Vector3.Distance(transform.position, dest) < 0.1f)
-			path.RemoveAt(path.Count-1);
+		if (path.Count>0) {
+			int step = path[path.Count-1];
+			////Vector3 dest = GenerateGraph.nodeVectors[step];
+			Vector3 dest;
+			GenerateGraph.nodes.TryGetValue (step, out dest);
+			DumbSeek(dest);
+			if (Vector3.Distance(transform.position, dest) < 0.1f)
+				path.RemoveAt(path.Count-1);
+		}
 	}
 	
 	void PrintPath(List<int> thispath) {
@@ -190,7 +218,9 @@ public class EnemyController : MonoBehaviour {
 		foreach (int n in thispath) {
 			p = p + n + ", ";
 		}
-		Debug.Log (p.Substring (0,p.Length-2) + "\n");
+		if (p.Length > 2) {
+			Debug.Log (p.Substring (0,p.Length-2) + "\n");
+		}
 	}
 	
 	void OnMouseOver() {
@@ -218,7 +248,6 @@ public class EnemyController : MonoBehaviour {
 		}
 	}
 	
-	//Giving this it's own function to add room for death animations and sounds.
 	void KillMe() {
 		if (myParentSpwaner != null)
 			myParentSpwaner.GetComponent<EnemySpawnerController>().childrenSpawned--;

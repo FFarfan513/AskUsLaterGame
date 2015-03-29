@@ -27,14 +27,6 @@ For what I did myself, I was told by the professor to copy the current scene int
 3/27 - Fristian
 I did a lot, so I hope I don't forget something. Not all of it will affect other scenes, but some of it might.
 TLDR: I added a graph, enemies, and made them move around in it.
-
-3/27 - Will
-Small update to give everyone a cleaner start. Removed Scipt component on Middle camera. Disabled Animation and Animator Controller on Ripple prefabs. Added Animations and Audio folders (empty).
-Completed Enemy Spawner, added tag for Enemies.
-
-3/28 - Will
-Added a demo scene, changed a few numbers for the EnemySpawner prefab. Demo scene needs testing and feedback before the presentation (it is definately not final at the moment).
-
 Unity things:
 I made some progress in understanding Unity's Layers and LayerMasks. When using a raycast, you can choose to only raycast colliders on a certain layer, or colliders not on a certain layer. To do this, the object needs to have that layer set in their inspector, and then you need to specify that layer in the code. I used two of the User Layers for Nodes and Enemies. All nodes have the Node layer, and all enemies should have the Enemy layer. This is so that enemies can raycast from themselves and ignore both their own colliders, and the colliders of the nodes. To get the layer for any object except those using the Node Layer (basically, using a ray/line/circle cast on anything but a node) you can use '~LayerMask.GetMask ("Node")' minus the single quotes. This is important, so remember this.
 I also made the players tag's match up with PlayerBlack and PlayerWhite.
@@ -45,3 +37,15 @@ Other things:
 I created two new scripts, GenerateGraph and EnemeyController.
 GenerateGraph creates a graph of nodes. These nodes are gameObjects that only have circleColliders on them. It creates two spaces of nodes where they are generated in a rectangular pattern based off of a set left/top/right/bottom boundary, which is set in the Unity Editor as two float arrays. The nodes that are close to each other are then connected, giving us one big disconnected graph (a graph where not every node is connected to each other).
 EnemyController implements the Finite State Machine behavior on the enemy. The state is represented by an enum. The enemy continuously casts a ray towards it's target. If the target's visible, it will seek directly towards it. If not, it'll calculate an A* path towards it, recalculating it if the target moves towards a new node. If clicked on with the correct mouse button, it'll be in paralyzed state. After a few seconds, it will unfreeze and continue to try and move towards the player.
+
+3/27 - Will
+Small update to give everyone a cleaner start. Removed Scipt component on Middle camera. Disabled Animation and Animator Controller on Ripple prefabs. Added Animations and Audio folders (empty).
+Completed Enemy Spawner, added tag for Enemies.
+
+3/28 - Will
+Added a demo scene, changed a few numbers for the EnemySpawner prefab. Demo scene needs testing and feedback before the presentation (it is definately not final at the moment).
+
+2/29 - Fristian
+Cleaned up some stuff in GenerateGraph.cs and EnemyController.cs. Enemies should no longer take weird paths to a node before starting their A*, nor should they clip through the walls. The way I did this was that originally, the check to see if an object was visible was a LineCast. This meant that if the line touched the target, even though it was really thin, it would immediately seek towards it's target. I changed this to a CircleCast, which essentially drags a circle shaped raycast across the scene, with the diameter of the circle being a tiny bit bigger than the sprite's width. So now it'll only start moving directly towards the player if there is enough empty space for the enemy's sprite to move through. Note however, that I didn't add any collision detection with walls or anything, so the enemy's still have the potential to run through walls. They just shouldn't. Maybe I'll fix this later. In doing this I also added a little extra check in GenerateGraph that doesn't connect two adjacent nodes if the spacing between them isn't sufficiently large. I might need to tweak this later.
+I also made the radius float in GenerateGraph private, and set it to 0.9. Thanks to Will's demo scene I realized that 0.5 wasn't enough to prevent nodes from being created right next to walls, and so since I had that CircleCast check earlier, those nodes that partially spawned within the walls weren't connected to any other nodes, giving errors when trying to A* to/from/through them. However, 1 was too big, and it would prevent nodes from being spawned close to certain walls. So I found 0.9 was good, and I don't want to change it and then have a problem like before.
+A few extra things. I made the ClickPosition objects in my scene have the Background sprite layer. This is because in my scene, there is one enemy that follows the mouse position instead of the player, and since enemy's have the Below sprite layer, if it successfully ran into the click position, the sprite for the X would move above the enemy. And it's okay that both BGWhite and BGBlack have the background layer too. The click position still stays on top of them, so I recommend changing the ClickPosition object's sprite layers to Background for all scenes.

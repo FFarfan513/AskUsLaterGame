@@ -49,6 +49,7 @@
      <Compile Include="Assets\Scripts\CenterOn.cs" />
      <Compile Include="Assets\Scripts\ClickToMove.cs" />
      <Compile Include="Assets\Scripts\EnemyController.cs" />
+     <Compile Include="Assets\Scripts\EnemySpawnerController.cs" />
      <Compile Include="Assets\Scripts\GenerateBounds.cs" />
      <Compile Include="Assets\Scripts\GenerateGraph.cs" />
      <Compile Include="Assets\Scripts\MoveTo.cs" />
