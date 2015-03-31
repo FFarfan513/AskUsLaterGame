@@ -3,27 +3,23 @@ using System.Collections;
 
 public class CenterOn : MonoBehaviour {
 	public GameObject character;
-	public Camera cam;
+	private Camera cam;
+	MoveTo ch;
 
 	//This matches the camera's Z in unity
-	public static float cameraZ = 10f;
-	//The width of the divider wall between White and Black
-	public static float dividerWallWidth = 10f;
+	public static float cameraZ;
+	
+	private float speed;
+	private float edge = 0.59f;
 
-	private float cameraXSpeed;
-	private float cameraYSpeed;
-	public float speed;
-	private float edge;
-
-	void Start() {
-		cameraXSpeed = 0;
-		cameraYSpeed = 0;
-		edge = 0.58f; //edge keeps track of the relative percentage of the screen we're allowed to move in
+	void Awake() {
+		cam = this.camera;
+		ch = character.GetComponent<MoveTo>();
+		speed = ch.moveSpeed;
+		cameraZ = -cam.transform.position.z;
 	}
 
 	void Update () {
-		Vector3 cameraPosition = cam.transform.position;
-
 		//the mins and maxes are the relative screen points at which the camera will start moving
 		float xMax = (new Vector3(edge,0,cameraZ)).x;
 		float xMin = (new Vector3((1-edge),0,cameraZ)).x;;
@@ -31,29 +27,17 @@ public class CenterOn : MonoBehaviour {
 		float yMin = (new Vector3(0,(1-edge),cameraZ)).y;
 		Vector3 relativePos = cam.WorldToViewportPoint(character.transform.position);
 
+		Vector3 movdir = ch.getHeading();
+
 		//if your position relative to the screen is past a certain point, start moving the camera
-		if ( relativePos.x > xMax ) {
-			cameraXSpeed = speed;
-		}
-		else if (relativePos.x < xMin) {
-			cameraXSpeed = -speed;
-		}
-		else {
-			cameraXSpeed = 0;
+		Vector3 horiz = new Vector3(movdir.x,0,0);
+		Vector3 vert = new Vector3(0,movdir.y,0);
+		if ( relativePos.x > xMax || relativePos.x < xMin) {
+			transform.Translate(horiz*speed*Time.deltaTime);
 		}
 
-		if ( relativePos.y > yMax ) {
-			cameraYSpeed = speed;
+		if ( relativePos.y > yMax || relativePos.y < yMin) {
+			transform.Translate(vert*speed*Time.deltaTime);
 		}
-		else if (relativePos.y < yMin) {
-			cameraYSpeed = -speed;
-		}
-		else {
-			cameraYSpeed = 0;
-		}
-
-		cameraPosition.x += cameraXSpeed;
-		cameraPosition.y += cameraYSpeed;
-		transform.position = cameraPosition;
 	}
 }

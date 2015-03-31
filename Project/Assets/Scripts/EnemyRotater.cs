@@ -5,7 +5,7 @@ public class EnemyRotater : MonoBehaviour {
 
 	EnemyController controller;
 
-	private float aggressiveRotateSpeed = 3.5f, calmRotateSpeed = 2f;
+	public float aggressiveRotateSpeed, calmRotateSpeed;
 
 	void Start () {
 		controller = gameObject.GetComponent<EnemyController>();

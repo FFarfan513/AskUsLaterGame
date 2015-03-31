@@ -3,13 +3,14 @@ using System.Collections;
 
 public class ClickToMove : MonoBehaviour {
 	public Camera cam;
-	public float distanceFromCamera = CenterOn.cameraZ;
+	private float distanceFromCamera;
 	public int mouseButton; //left click is 0, right click is 1
 	private Vector3 currentPosition;
 
 	private LayerMask enemies;
 
 	void Start() {
+		distanceFromCamera = CenterOn.cameraZ;
 		enemies = LayerMask.GetMask("Enemy");
 		currentPosition = transform.position;
 	}

@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class MoveTo : MonoBehaviour {
-	Vector3 currentPosition;
-	Vector3 moveDirection;
+	private Vector3 currentPosition;
+	private Vector3 heading;
 	public GameObject followMe;
 	public float moveSpeed;
 	private float bounceSpeed = 0.2f;
@@ -20,6 +20,7 @@ public class MoveTo : MonoBehaviour {
 	void Update () {
 		currentPosition = transform.position;
 		Vector3 moveHere = followMe.transform.position;
+		heading = (moveHere - currentPosition).normalized;
 		float distanceBetween = Vector3.Distance(currentPosition,moveHere);
 		//if the distance between us and our target is less than .1, teleport there.
 		//this is to prevent that weird shaking that happens a lot.
@@ -27,11 +28,7 @@ public class MoveTo : MonoBehaviour {
 			transform.position = moveHere;
 		}
 		else {
-			moveDirection = moveHere - currentPosition;
-			moveDirection.z = 0;
-			moveDirection.Normalize();
-			
-			Vector3 target = moveDirection * moveSpeed + currentPosition;
+			Vector3 target = heading * moveSpeed + currentPosition;
 			transform.position = Vector3.Lerp(currentPosition, target, Time.deltaTime);
 			/*
 			if (Time.time >= timestamp) {
@@ -40,6 +37,10 @@ public class MoveTo : MonoBehaviour {
 			}
 			*/
 		}
+	}
+
+	public Vector3 getHeading() {
+		return heading;
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {

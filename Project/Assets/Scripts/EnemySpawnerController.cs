@@ -4,13 +4,12 @@ using System.Collections;
 public class EnemySpawnerController : MonoBehaviour {
 
 	public float chanceToSpawn;		// Percent chance needed to spawn per Update (between 0 and 100)
-	public float myMaxRangeToSpawn;	// Maximum distance to player to allow spawning
-	public float myMinRangeToSpawn;	// Minimum distance to player to allow spawning
+	public float myMaxRangeToSpawn; // Maximum distance to player to allow spawning
 	private float myChance;			// Used to determine when to spawn
 	private float myDistance;		// Current distance from this spawner to the player
 	private int myDeadlyButton;		// 0 == Killed by left click, 1 == Killed by right click
 	public int maxCanSpawn;			// Maximum number of enemies this spawner can spawn
-	public int childrenSpawned;		// Current number of enemies this spawner has spawned
+	private int childrenSpawned;	// Current number of enemies this spawner has spawned
 	public int noSpawnTime;			// Time the spawner waits after spawning before considering spawning again
 	private int myCountdown;		// Time left until spawner can consider spawning again
 	
@@ -19,16 +18,25 @@ public class EnemySpawnerController : MonoBehaviour {
 	public float myMoveSpeed;		// The (initial) move speed of the objects we spawn
 	public float myFrozenSeconds;	// The amount of time an object spends frozen
 
+	private float cameraLeniency = 0.2f;
+	private Camera cam;
 	//private float idleConstant = 1;
 
 	void Start() {
 		childrenSpawned = 0;
-		if (transform.position.x < 0){
+		if (transform.position.x < 0) {
 			myDeadlyButton = 1;
+			cam = Camera.main;
 		}
 		else {
 			myDeadlyButton = 0;
-		}		
+			foreach (Camera c in Camera.allCameras) {
+				if (c.gameObject.name == "CameraWhite") {
+					cam = c;
+					break;
+				}
+			}
+		}
 	}
 	
 	// Update is called once per frame
@@ -41,12 +49,11 @@ public class EnemySpawnerController : MonoBehaviour {
 		// Decrease noSpawnTime every Update
 		if (myCountdown > 0) {
 			myCountdown--;
-			//Debug.Log(myCountdown);
 		}
 
 		// If player is within range, and spawned less than max children, and not on cooldown
-		if (myDistance <= myMaxRangeToSpawn && myDistance >= myMinRangeToSpawn
-		    && childrenSpawned < maxCanSpawn && myCountdown == 0) {
+		if (myDistance <= myMaxRangeToSpawn && NotNearScreen() &&
+		    childrenSpawned < maxCanSpawn && myCountdown == 0) {
 
 			// Roll the dice
 			myChance = Random.Range(0f, 100f);
@@ -60,7 +67,6 @@ public class EnemySpawnerController : MonoBehaviour {
 				}
 				else */
 					Spawn(myMoveSpeed);
-
 			}
 		}
 
@@ -93,6 +99,19 @@ public class EnemySpawnerController : MonoBehaviour {
 		c.moveSpeed = speed;
 		c.followMe = followThis;
 		c.frozenSeconds = myFrozenSeconds;
+	}
+
+	bool NotNearScreen() {
+		Vector3 relativePos = cam.WorldToViewportPoint(transform.position);
+		if (relativePos.x>(1+cameraLeniency) || relativePos.x<(-cameraLeniency) ||
+		    relativePos.y>(1+cameraLeniency) || relativePos.y<(-cameraLeniency))
+			return true;
+		else
+			return false;
+	}
+
+	public void DecrementChildren() {
+		childrenSpawned--;
 	}
 	
 }

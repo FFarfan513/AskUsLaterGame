@@ -25,7 +25,10 @@ public class EnemyController : MonoBehaviour {
 	
 	public LayerMask nodeMask;
 	public LayerMask nodeAndEnemy;
+
+	private Color originalColor;
 	private Color frozenColor = Color.blue;
+	private int frozenCountdown;
 
 	//This is all for audio
 	private GameObject playerObj;
@@ -33,13 +36,14 @@ public class EnemyController : MonoBehaviour {
 	public AudioClip freezeSound;
 	public AudioClip damageSound;
 	public AudioClip killSound;
-	private float lowPitch = 0.7f, highPitch = 1.2f;
+	private float lowPitch = 0.7f, highPitch = 1.1f;
 
 	//Each enemy knows which side it's on based on it's deadlyMouseButton
 	void Start() {
 		me = State.Idle;
-		SpriteRenderer s = renderer as SpriteRenderer;
+		SpriteRenderer s = this.GetComponent<SpriteRenderer>();
 		sightRadius = s.bounds.extents.magnitude + 0.05f;
+		originalColor = s.color;
 		if (deadlyMouseButton == 1)
 			playerTag = "PlayerBlack";
 		else if (deadlyMouseButton == 0)
@@ -192,19 +196,32 @@ public class EnemyController : MonoBehaviour {
 	}
 	
 	public void Neutralize() {
+		//If you want to make it so that clicking on a frozen enemy refreshes
+		//the time it spends frozen, remove this if statement here.
 		if(me != State.Paralyzed) {
+			frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
 			me = State.Paralyzed;
-			Color originalColor = this.GetComponent<SpriteRenderer>().color;
 			this.GetComponent<SpriteRenderer>().color = frozenColor;
 			PlaySound(freezeSound);
-			StartCoroutine(Frozen(originalColor));
 		}
 	}
-	
-	IEnumerator Frozen(Color originalColor) {
-		yield return new WaitForSeconds(frozenSeconds);
+
+	void UnFreeze() {
 		me = State.Idle;
 		this.GetComponent<SpriteRenderer>().color = originalColor;
+		frozenCountdown = 0;
+	}
+
+	void FixedUpdate() {
+		if (me == State.Paralyzed && frozenCountdown > 0) {
+			frozenCountdown--;
+			/*if (frozenCounddown <= someConstant) {
+				DoTheUnfreezingAnimation();
+			}*/
+			if (frozenCountdown <= 0) {
+				UnFreeze();
+			}
+		}
 	}
 	
 	void OnTriggerEnter2D( Collider2D other ) {
@@ -222,7 +239,7 @@ public class EnemyController : MonoBehaviour {
 	
 	void KillMe() {
 		if (myParentSpwaner != null)
-			myParentSpwaner.GetComponent<EnemySpawnerController>().childrenSpawned--;
+			myParentSpwaner.GetComponent<EnemySpawnerController>().DecrementChildren();
 		DestroyObject(gameObject);
 	}
 
