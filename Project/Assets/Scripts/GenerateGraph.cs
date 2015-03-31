@@ -143,14 +143,8 @@ public class GenerateGraph : MonoBehaviour {
 	void Update() {
 		if (Input.GetKeyDown (KeyCode.Z))
 			showMe = !showMe;
-		/*
-		if (Input.GetAxis("Mouse ScrollWheel") < 0) {
-			Camera.main.fieldOfView++;
-		}
-		if (Input.GetAxis("Mouse ScrollWheel") > 0) {
-			Camera.main.fieldOfView--;
-		}
-		*/
+		if (Input.GetKey("escape"))
+			Application.Quit();
 	}
 	
 	void PrintGraph() {

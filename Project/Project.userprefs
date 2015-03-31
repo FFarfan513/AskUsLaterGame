@@ -1,10 +1,15 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GenerateGraph.cs">
     <Files>
-      <File FileName="Assets\Scripts\GenerateGraph.cs" Line="47" Column="32" />
-      <File FileName="Assets\Scripts\EnemyController.cs" Line="36" Column="3" />
-      <File FileName="Assets\Scripts\MoveTo.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GenerateGraph.cs" Line="147" Column="23" />
+      <File FileName="Assets\Scripts\EnemyController.cs" Line="22" Column="9" />
+      <File FileName="Assets\Scripts\MoveTo.cs" Line="19" Column="2" />
+      <File FileName="Assets\Scripts\ClickToMove.cs" Line="24" Column="4" />
+      <File FileName="Assets\Scripts\EnemySeeker.cs" Line="23" Column="12" />
+      <File FileName="Assets\Scripts\EnemyRotater.cs" Line="11" Column="59" />
+      <File FileName="Assets\Scripts\EnemySpawnerController.cs" Line="34" Column="36" />
+      <File FileName="Assets\Scripts\PlayMusic.cs" Line="4" Column="41" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
