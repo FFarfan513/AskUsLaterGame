@@ -36,7 +36,7 @@ public class EnemyController : MonoBehaviour {
 	public AudioClip freezeSound;
 	public AudioClip damageSound;
 	public AudioClip killSound;
-	private float lowPitch = 0.7f, highPitch = 1.1f;
+	private float lowPitch = 0.65f, highPitch = 1.15f;
 
 	//Each enemy knows which side it's on based on it's deadlyMouseButton
 	void Start() {

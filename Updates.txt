@@ -70,3 +70,7 @@ CenterOn is a lot cleaner now, and travels at the same speed as the player at al
 I added in the check for EnemySpawnerController to see if the spawner is in range of the camera (with some leniency). I also cleaned up some private variables I didn't want showing up in the Inspector (childrenSpawned).
 I also made it so that we can easily swap between two methods of attack to test which one is better. Either clicking on an enemy freezes them, and they are unaffected by all clicks until they unfreeze, or clicking on a frozen enemy resets their frozen timer. I'm partial to the first way, but we can play around with both and see which ones we like better.
 Unity is also now keeping compressed versions of the song files in memory (doesn't change the fact that they're still .wav's in our folder though).
+
+4/1 Sound - Fristian
+So I goofed. I thought that Unity wanted us to import songs as uncompressed wav files and then have Unity itself compressed them. This is true only if you wanted to compress to mp3. If you're on Windows/Mac, it defaults to compressing wavs to ogg files, and you can import ogg files into Unity directly without a loss of sound quality, so this whole time we didn't need those gigantic wav files cluttering our assets folder. I replaced all the music files from .wav's to .ogg's, which had a tremendous affect on size (some files went from like 44MB to 2MB), so hopefully that'll help. The sounds effects were kept as .wav though, since they're small enough.
+I also did a few extra misc. things that really aren't that big of a deal to talk about.
