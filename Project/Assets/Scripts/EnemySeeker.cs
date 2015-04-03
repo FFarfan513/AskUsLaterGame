@@ -7,6 +7,7 @@ public class EnemySeeker : MonoBehaviour {
 	EnemyController controller;
 
 	private List<int> path;
+	private Vector3 followPos;
 
 	void Start() {
 		controller = gameObject.GetComponent<EnemyController>();
@@ -15,12 +16,12 @@ public class EnemySeeker : MonoBehaviour {
 	
 	void Update() {
 		if (controller.GetState() != EnemyController.State.Paralyzed) {
-			if (controller.CanSeeIt())
+			if (controller.CanSeeIt(transform.position))
 				controller.SetState(EnemyController.State.HasSight);
 			else
 				controller.SetState(EnemyController.State.NoSight);
 		}
-		Vector3 followPos = controller.followMe.transform.position;
+		followPos = controller.followMe.transform.position;
 
 		switch (controller.GetState())
 		{
@@ -65,6 +66,13 @@ public class EnemySeeker : MonoBehaviour {
 			transform.position = controller.DumbSeek(transform.position, dest);
 			if (Vector3.Distance(transform.position, dest) < 0.1f)
 				path.RemoveAt(path.Count-1);
+		}
+	}
+
+	void OnTriggerEnter2D( Collider2D other ) {
+		if (other.tag == controller.GetPlayerTag()) {
+			controller.Damage();
+			controller.KillMe();
 		}
 	}
 }

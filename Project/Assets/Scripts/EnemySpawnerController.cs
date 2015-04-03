@@ -78,6 +78,8 @@ public class EnemySpawnerController : MonoBehaviour {
 		Init(child.GetComponent<EnemyController>(), speed);
 	}
 
+	//Irregular spawns. We might not end up needing/using these:
+
 	//Spawns enemies with the same sprite as the original, but either scaled larger or smaller
 	void SpawnScaled(float speed, float scaling) {
 		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
@@ -102,6 +104,7 @@ public class EnemySpawnerController : MonoBehaviour {
 	}
 
 	bool NotNearScreen() {
+		//The bottom-left of the camera is (0,0); the top-right is (1,1).
 		Vector3 relativePos = cam.WorldToViewportPoint(transform.position);
 		if (relativePos.x>(1+cameraLeniency) || relativePos.x<(-cameraLeniency) ||
 		    relativePos.y>(1+cameraLeniency) || relativePos.y<(-cameraLeniency))

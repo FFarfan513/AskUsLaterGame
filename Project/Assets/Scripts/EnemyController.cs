@@ -41,8 +41,9 @@ public class EnemyController : MonoBehaviour {
 	//Each enemy knows which side it's on based on it's deadlyMouseButton
 	void Start() {
 		me = State.Idle;
-		SpriteRenderer s = this.GetComponent<SpriteRenderer>();
+		SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
 		sightRadius = s.bounds.extents.magnitude + 0.05f;
+		//sightRadius = gameObject.GetComponent<Collider2D>().bounds.extents.magnitude;
 		originalColor = s.color;
 		if (deadlyMouseButton == 1)
 			playerTag = "PlayerBlack";
@@ -52,8 +53,8 @@ public class EnemyController : MonoBehaviour {
 		source = playerObj.GetComponent<AudioSource>();
 	}
 
-	public bool CanSeeIt() {
-		Vector2 currentPos = new Vector2(transform.position.x, transform.position.y);
+	public bool CanSeeIt(Vector3 from) {
+		Vector2 currentPos = new Vector2(from.x, from.y);
 		Vector2 followPos = new Vector2(followMe.transform.position.x, followMe.transform.position.y);
 		Vector2 dist = followPos-currentPos;
 		RaycastHit2D hit = Physics2D.CircleCast(currentPos, sightRadius, dist, dist.magnitude, ~nodeAndEnemy);
@@ -207,6 +208,7 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	void UnFreeze() {
+		//Everytime you unfreeze, it sets your state to Idle.
 		me = State.Idle;
 		this.GetComponent<SpriteRenderer>().color = originalColor;
 		frozenCountdown = 0;
@@ -224,37 +226,37 @@ public class EnemyController : MonoBehaviour {
 		}
 	}
 	
-	void OnTriggerEnter2D( Collider2D other ) {
-		if (other.tag == playerTag) {
-			if (me != State.Paralyzed) {
-				PlaySound(damageSound);
-				print("Damage!\n");
-			}
-			else {
-				PlaySound(killSound);
-			}
-			KillMe();
-		}
-	}
-	
-	void KillMe() {
+	public void KillMe() {
 		if (myParentSpwaner != null)
 			myParentSpwaner.GetComponent<EnemySpawnerController>().DecrementChildren();
 		DestroyObject(gameObject);
 	}
 
-	void PlaySound(AudioClip clip){
+	public void Damage() {
+		if (me != State.Paralyzed) {
+			PlaySound(damageSound);
+			print("Damage!\n");
+		}
+		else {
+			PlaySound(killSound);
+		}
+	}
+
+	public void PlaySound(AudioClip clip){
 		if (source != null) {
 			source.pitch = Random.Range (lowPitch, highPitch);
 			source.PlayOneShot(clip);
 		}
 	}
 
-	//I wanted to keep the State enum private.
+	//Getters/Setters:
 	public State GetState() {
 		return me;
 	}
 	public void SetState(State newState) {
 		me = newState;
+	}
+	public string GetPlayerTag() {
+		return playerTag;
 	}
 }

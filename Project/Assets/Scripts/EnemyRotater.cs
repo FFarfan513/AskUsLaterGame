@@ -13,7 +13,7 @@ public class EnemyRotater : MonoBehaviour {
 	
 	void Update () {
 		if (controller.GetState() != EnemyController.State.Paralyzed) {
-			if (controller.CanSeeIt())
+			if (controller.CanSeeIt(transform.position))
 				controller.SetState(EnemyController.State.HasSight);
 			else
 				controller.SetState(EnemyController.State.Idle);
@@ -40,5 +40,12 @@ public class EnemyRotater : MonoBehaviour {
 
 	void Rotate(float turnSpeed) {
 		transform.Rotate(Vector3.forward * turnSpeed * 50 * Time.deltaTime);
+	}
+
+	void OnTriggerEnter2D( Collider2D other ) {
+		if (other.tag == controller.GetPlayerTag()) {
+			controller.Damage();
+			controller.KillMe();
+		}
 	}
 }
