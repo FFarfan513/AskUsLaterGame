@@ -83,3 +83,4 @@ Another important note: I moved the OnTriggerEnter2D from EnemyController to the
 
 4/3 - Will
 Added Sticky enemy type and associated script, added Object Rotator script (may never be used but it's there), gave rigidbodies to Walls instead of enemies.
+FollowUp = Removed ObjectRotator.cs, added Goal prefab, which knows which side it's on and spins faster when the player is inside it. Also put commented code to add ripple animations inside it if I make those animations again. Goals can be used as switches if its wallToDestroy is not null; the selected wall (from the Scene not Assets!) will be destroyed along with the switch when the player enters it (recommend switches be scaled to 1 to differentiate them from goals).
