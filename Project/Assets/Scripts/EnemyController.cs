@@ -17,14 +17,16 @@ public class EnemyController : MonoBehaviour {
 	public float moveSpeed;
 	public int deadlyMouseButton;
 	public float frozenSeconds;
+
+	private SpriteRenderer render;
 	private float nodeDetectionRadius = 2.5f;
 	private float sightRadius; //how thick our enemy's line of sight is.
 	private string playerTag;
 
 	private State me;
 	
-	public LayerMask nodeMask;
-	public LayerMask nodeAndEnemy;
+	private LayerMask nodeMask;
+	private LayerMask nodeAndEnemy;
 
 	private Color originalColor;
 	private Color frozenColor = Color.blue;
@@ -36,20 +38,21 @@ public class EnemyController : MonoBehaviour {
 	public AudioClip freezeSound;
 	public AudioClip damageSound;
 	public AudioClip killSound;
-	private float lowPitch = 0.65f, highPitch = 1.15f;
+	private float lowPitch = 0.7f, highPitch = 1.1f;
 
 	//Each enemy knows which side it's on based on it's deadlyMouseButton
 	void Start() {
 		me = State.Idle;
-		SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
-		sightRadius = s.bounds.extents.magnitude + 0.05f;
-		//sightRadius = gameObject.GetComponent<Collider2D>().bounds.extents.magnitude;
-		originalColor = s.color;
+		render = gameObject.GetComponent<SpriteRenderer>();
+		sightRadius = render.bounds.extents.magnitude + 0.05f;
+		originalColor = render.color;
 		if (deadlyMouseButton == 1)
 			playerTag = "PlayerBlack";
 		else if (deadlyMouseButton == 0)
 			playerTag = "PlayerWhite";
 		playerObj = GameObject.FindWithTag(playerTag);
+		nodeMask = LayerMask.GetMask("Node");
+		nodeAndEnemy = LayerMask.GetMask("Node","Enemy");
 		source = playerObj.GetComponent<AudioSource>();
 	}
 
@@ -202,7 +205,7 @@ public class EnemyController : MonoBehaviour {
 		if(me != State.Paralyzed) {
 			frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
 			me = State.Paralyzed;
-			this.GetComponent<SpriteRenderer>().color = frozenColor;
+			render.color = frozenColor;
 			PlaySound(freezeSound);
 		}
 	}
@@ -217,13 +220,26 @@ public class EnemyController : MonoBehaviour {
 	void FixedUpdate() {
 		if (me == State.Paralyzed && frozenCountdown > 0) {
 			frozenCountdown--;
-			/*if (frozenCounddown <= someConstant) {
-				DoTheUnfreezingAnimation();
-			}*/
+			if (frozenCountdown <= 60) {
+				//Placeholder thing
+				if (frozenCountdown%10 == 0)
+					UnfreezingAnim();
+			}
 			if (frozenCountdown <= 0) {
 				UnFreeze();
 			}
 		}
+	}
+
+	//Essentially what I'm doing as a placeholder is that after a specific interval, it will switch it's color
+	//to a darker blue shade, and back. It'll flash three times before unfreezing.
+	//This is a placeholder though, we'll probably spice it up later.
+	void UnfreezingAnim() {
+		if (render.color == frozenColor) {
+			float r=0,g=0,b=135;
+			render.color = new Color(r/255.0f,g/255.0f,b/255.0f);}
+		else
+			render.color = frozenColor;
 	}
 	
 	public void KillMe() {
@@ -236,16 +252,27 @@ public class EnemyController : MonoBehaviour {
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
 			print("Damage!\n");
+			//ResetEnemies();
 		}
 		else {
 			PlaySound(killSound);
 		}
+		//The Killing of the object goes in the enemy specific scripts.
 	}
 
 	public void PlaySound(AudioClip clip){
 		if (source != null) {
 			source.pitch = Random.Range (lowPitch, highPitch);
 			source.PlayOneShot(clip);
+		}
+	}
+
+	//Not done yet I don't think. Not sure If I want all visible enemies to die, or just that side.
+	void ResetEnemies() {
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		foreach (var en in enemies) {
+			if (en.GetComponent<SpriteRenderer>().isVisible)
+				en.GetComponent<EnemyController>().KillMe();
 		}
 	}
 

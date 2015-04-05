@@ -37,10 +37,17 @@ public class EnemySpawnerController : MonoBehaviour {
 				}
 			}
 		}
+
+		transform.localScale = new Vector3(myMaxRangeToSpawn+3,myMaxRangeToSpawn+3,0);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		//DrawRange();
+		if (Input.GetKeyDown(KeyCode.Z)) {
+			SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
+			s.enabled = !s.enabled;
+		}
 	
 		// Recalculate distance to player every Update
 		myDistance = Vector3.Distance(transform.position, followThis.transform.position);
@@ -115,6 +122,17 @@ public class EnemySpawnerController : MonoBehaviour {
 
 	public void DecrementChildren() {
 		childrenSpawned--;
+	}
+
+	void DrawRange() {
+		Debug.DrawRay (transform.position,new Vector3(-myMaxRangeToSpawn,0,0),Color.red);
+		Debug.DrawRay (transform.position,new Vector3(myMaxRangeToSpawn,0,0),Color.red);
+		Debug.DrawRay (transform.position,new Vector3(0,myMaxRangeToSpawn,0),Color.red);
+		Debug.DrawRay (transform.position,new Vector3(0,-myMaxRangeToSpawn,0),Color.red);
+		Debug.DrawRay (transform.position,new Vector3(1,1,0).normalized * myMaxRangeToSpawn,Color.red);
+		Debug.DrawRay (transform.position,new Vector3(-1,-1,0).normalized * myMaxRangeToSpawn,Color.red);
+		Debug.DrawRay (transform.position,new Vector3(-1,1,0).normalized * myMaxRangeToSpawn,Color.red);
+		Debug.DrawRay (transform.position,new Vector3(1,-1,0).normalized * myMaxRangeToSpawn,Color.red);
 	}
 	
 }

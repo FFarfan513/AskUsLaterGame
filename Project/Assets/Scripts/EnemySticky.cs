@@ -14,7 +14,7 @@ public class EnemySticky : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (canMove) {
+		if (canMove && controller.GetState() != EnemyController.State.Paralyzed) {
 			followPos = controller.followMe.transform.position;
 			transform.position = controller.DumbSeek(transform.position, followPos);
 		}
