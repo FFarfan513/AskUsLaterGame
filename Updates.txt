@@ -95,3 +95,7 @@ I added in a placeholder animation thing to the enemies, where after they get fr
 Random other things:
 I fixed a bug with Will's EnemySticky where it would keep moving even when frozen.
 I've been using 15/15/15 for the BGBlack's color RGB values, and I think I like it more than 13/13/13. Also, the ClickPositionBlack's color I'm using is 72/72/72 while ClickPositionWhite's color is 96/96/96.
+
+4/6 - Fristian
+A small bugfix. It used to be possible to freeze enemies you couldn't see if you clicked on the correct position they were at relative to the other camera. For instance if an enemy was coming at playerWhite from the left side offscreen (and thus, basically under the left half of the game), and you luckily left clicked that spot it was at, it would freeze that enemy. This has been fixed now. You can only freeze enemies if they are in view of the camera when you click on their position.
+Also guys, try changing the FOV on CameraWhite and CameraBlack to 115 instead of 110. I think it makes a pretty big difference, and I like it a little more.
