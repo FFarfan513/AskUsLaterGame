@@ -9,12 +9,7 @@ public class GenerateGraph : MonoBehaviour {
 	public float spacing; //keeping this at 3 is okay I think.
 	private float radius = 0.9f;
 	public GameObject nodePrefab;
-	
-	/*I'm not sure whether I want the list of nodes to be a List of Vector3's, with the index indicating
-	the node it represents, of a Dictionary(HashTable). For now I'll roll with Dictionary because it
-	should probably be faster in theory, but I'll leave the option of a List open through comments
-	*/
-	////public static List<Vector3> nodeVectors;.
+
 	public static Dictionary <int,Vector3> nodes;
 	private Dictionary <Vector3,int> sedon;
 	
@@ -24,11 +19,11 @@ public class GenerateGraph : MonoBehaviour {
 	
 	private bool showMe;
 	public static bool graphLoaded;
+	private LayerMask noNodes;
 	
-	void Start () {
-		////nodeVectors = new List<Vector3>();
+	void Awake () {
+		noNodes = ~LayerMask.GetMask ("Node");
 		nodes = new Dictionary<int,Vector3>();
-		sedon = new Dictionary<Vector3,int>();
 		CreateNodes(leftRightUpDown1);
 		CreateNodes(leftRightUpDown2);
 		ConnectGraph();
@@ -53,9 +48,7 @@ public class GenerateGraph : MonoBehaviour {
 			//create a new node and add it to nodes with it's position
 			if (!occupied) {
 				GameObject node = Instantiate(nodePrefab, nodePos, Quaternion.identity) as GameObject;
-				////nodeVectors.Add (nodePos);
 				nodes.Add(ID,nodePos);
-				sedon.Add(nodePos,ID);
 				node.name = "" + ID++;
 			}
 			xcurr += spacing;
@@ -68,18 +61,19 @@ public class GenerateGraph : MonoBehaviour {
 	}
 	
 	void ConnectGraph() {
+		sedon = new Dictionary<Vector3,int>(nodes.Count);
+		foreach (var node in nodes) {
+			sedon.Add (node.Value,node.Key);
+		}
 		graph = new Dictionary<int, List<int> >(nodes.Count);
 		Vector3 left  = new Vector3 (-spacing, 0, 0);
 		Vector3 right = new Vector3 (spacing,  0, 0);
 		Vector3 up    = new Vector3 (0, spacing,  0);
 		Vector3 down  = new Vector3 (0, -spacing, 0);
-		
-		/*////for (int i=0; i < nodeVectors.Count; i++) {
-		////Vector3 pos = nodeVectors[i];
-		*////
+
 		foreach (var node in nodes) {
 			Vector3 pos = node.Value;
-			connections = new List<int>();
+			connections = new List<int>(8);
 			
 			//Look at all 8 standard directions, to see if there's a node there.
 			//If so, add that node to this node's adjacency list.
@@ -91,7 +85,8 @@ public class GenerateGraph : MonoBehaviour {
 			Lookup(pos, pos+left+down);
 			Lookup(pos, pos+down);
 			Lookup(pos, pos+right+down);
-			////graph.Add(i,connections);
+			if (connections.Count == 0)
+				Debug.Log("Warning: node " + node.Key + " is not connected to any other node in this graph\n");
 			graph.Add(node.Key,connections);
 		}
 		graphLoaded = true;
@@ -100,30 +95,15 @@ public class GenerateGraph : MonoBehaviour {
 	void Lookup(Vector3 pos, Vector3 test) {
 		//checks if there is an object in the way of a connection, and if there is, don't put a connection there.
 		Vector3 dist = test - pos;
-		RaycastHit2D obstruct = Physics2D.CircleCast(pos, 1f, dist, dist.magnitude, ~LayerMask.GetMask ("Node"));
-		
-		////if ((obstruct.collider==null || obstruct.collider.tag != "Wall") && nodeVectors.Contains(test))
-		////connections.Add(nodeVectors.IndexOf(test));
-		if ((obstruct.collider==null || obstruct.collider.tag != "Wall") && nodes.ContainsValue (test)) {
+		RaycastHit2D obstruct = Physics2D.CircleCast(pos, 1f, dist, dist.magnitude, noNodes);
+
+		if (obstruct.collider==null || obstruct.collider.tag != "Wall") {
 			int nodeNum;
 			if (sedon.TryGetValue (test, out nodeNum))
 				connections.Add (nodeNum);
 		}
 	}
-	
-	/*void OnDrawGizmos() {
-		//This draws the paths between the nodes.
-		if (graphLoaded && showMe) {
-			Gizmos.color = Color.black;
-			foreach (var n in graph) {
-				Vector3 node = nodeVectors[n.Key];
-				foreach (int adj in n.Value) {
-					Vector3 neigh = nodeVectors[adj];
-					Gizmos.DrawLine (node, neigh);
-				}
-			}
-		}
-	}*/
+
 	void OnDrawGizmos() {
 		//This draws the paths between the nodes.
 		if (graphLoaded && showMe) {

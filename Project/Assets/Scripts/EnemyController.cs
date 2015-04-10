@@ -98,7 +98,6 @@ public class EnemyController : MonoBehaviour {
 		HashSet<int> open = new HashSet<int>();
 		List <int> adj = new List<int>();
 		
-		////int nodeCount = GenerateGraph.nodeVectors.Count;
 		int nodeCount = GenerateGraph.nodes.Count;
 		float[] gScores = new float[nodeCount];
 		float[] fScores = new float[nodeCount];
@@ -107,8 +106,6 @@ public class EnemyController : MonoBehaviour {
 		int currentNode = startNode;
 		
 		Vector3 startNodePos, endNodePos, currentNodePos, neighborNodePos;
-		////startNodePos = GenerateGraph.nodeVectors[startNode];
-		////endNodePos = GenerateGraph.nodeVectors[endNode];
 		GenerateGraph.nodes.TryGetValue (startNode, out startNodePos);
 		GenerateGraph.nodes.TryGetValue (endNode, out endNodePos);
 		currentNodePos = startNodePos;
@@ -140,8 +137,6 @@ public class EnemyController : MonoBehaviour {
 				if (closed.Contains (neigh)) {
 					continue;
 				}
-				////currentNodePos = GenerateGraph.nodeVectors[currentNode];
-				////neighborNodePos = GenerateGraph.nodeVectors[neigh];
 				GenerateGraph.nodes.TryGetValue (currentNode, out currentNodePos);
 				GenerateGraph.nodes.TryGetValue (neigh, out neighborNodePos);
 				float gtemp = gScores[currentNode] + Vector3.Distance(currentNodePos,neighborNodePos);

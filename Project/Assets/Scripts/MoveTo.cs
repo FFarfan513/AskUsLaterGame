@@ -4,9 +4,10 @@ using System.Collections;
 public class MoveTo : MonoBehaviour {
 	private Vector3 currentPosition;
 	private Vector3 heading;
+	private Vector3 moveHere;
 	public GameObject followMe;
 	public float moveSpeed;
-	private float bounceSpeed = 0.2f;
+	private float bounceDist = 0.15f;
 	
 	//public GameObject myRipplePrefab;
 	//public float rippleSpeed;
@@ -19,12 +20,11 @@ public class MoveTo : MonoBehaviour {
 	
 	void Update () {
 		currentPosition = transform.position;
-		Vector3 moveHere = followMe.transform.position;
+		moveHere = followMe.transform.position;
 		heading = (moveHere - currentPosition).normalized;
-		float distanceBetween = Vector3.Distance(currentPosition,moveHere);
 		//if the distance between us and our target is less than .1, teleport there.
 		//this is to prevent that weird shaking that happens a lot.
-		if (distanceBetween < 0.1f) {
+		if (Vector3.Distance(currentPosition,moveHere) < 0.1f) {
 			transform.position = moveHere;
 		}
 		else {
@@ -43,18 +43,17 @@ public class MoveTo : MonoBehaviour {
 		return heading;
 	}
 
-	void OnTriggerEnter2D( Collider2D other ) {
+	void OnCollisionEnter2D(Collision2D other) {
+		//other.
 		//this makes us bounce back a bit, so that we can't phase into the wall
-		if (other.tag == "Wall") {
-			Vector3 trajectory = followMe.transform.position - transform.position;
-			trajectory.x = -trajectory.x;
-			trajectory.y = -trajectory.y;
-			trajectory = Vector3.ClampMagnitude(trajectory, bounceSpeed);
-			currentPosition += trajectory;
-			transform.position = currentPosition;
-			//this moves the target's position (the X) to where we are now, so that we don't keep moving after we bounce.
+		if (other.gameObject.tag == "Wall") {
+			transform.position += (-heading*bounceDist);
 			followMe.transform.position = transform.position;
 		}
+	}
+
+	void OnCollisionStay2D() {
+		followMe.transform.position = transform.position;
 	}
 
 	/*
