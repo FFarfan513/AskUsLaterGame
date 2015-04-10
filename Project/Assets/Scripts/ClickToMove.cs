@@ -5,7 +5,8 @@ public class ClickToMove : MonoBehaviour {
 	public Camera cam;
 	private float distanceFromCamera;
 	public int mouseButton; //left click is 0, right click is 1
-	bool hardmode = false;
+	private Vector3 mousePos;
+	private Vector3 relativeMouse;
 
 	private LayerMask enemies;
 
@@ -15,25 +16,36 @@ public class ClickToMove : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.H))
-			hardmode = !hardmode;
 		
 		//once the mouseButton is pressed, the object goes directly to that position
 		if (Input.GetMouseButtonDown(mouseButton)) {
-			var mousePos = Input.mousePosition;
+			mousePos = Input.mousePosition;
 			mousePos.z=distanceFromCamera;
-			Vector3 relativeMouse = cam.ScreenToViewportPoint(mousePos);
-			//THIS IF STATEMENT RIGHT HERE IS IMPORTANT:
-			if (hardmode || (mouseButton==0 && relativeMouse.x<=1.1) || (mouseButton==1 && relativeMouse.x>=-0.1))
+			relativeMouse = cam.ScreenToViewportPoint(mousePos);
+
+			if (WithinScreen())
 				transform.position = cam.ScreenToWorldPoint(mousePos);
 		}
 		//if the other mouse button was pressed, see if there is an enemy you can neutralize there
 		if (Input.GetMouseButtonDown((mouseButton+1)%2)) {
-			Ray r = cam.ScreenPointToRay(Input.mousePosition);
-			RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(r,100,enemies);
-			foreach(var hit in hits)
-				hit.transform.gameObject.GetComponent<EnemyController>().Neutralize();
+			mousePos = Input.mousePosition;
+			mousePos.z=distanceFromCamera;
+			relativeMouse = cam.ScreenToViewportPoint(mousePos);
+
+			if (WithinScreen()) {
+				Ray r = cam.ScreenPointToRay(mousePos);
+				RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(r,100,enemies);
+				foreach(var hit in hits)
+					hit.transform.gameObject.GetComponent<EnemyController>().Neutralize();
+			}
 		}
+	}
+
+	bool WithinScreen() {
+		if (relativeMouse.x<=1.0 && relativeMouse.x>=0)
+			return true;
+		else
+			return false;
 	}
 
 }

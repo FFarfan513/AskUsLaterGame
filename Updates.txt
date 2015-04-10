@@ -95,3 +95,12 @@ I added in a placeholder animation thing to the enemies, where after they get fr
 Random other things:
 I fixed a bug with Will's EnemySticky where it would keep moving even when frozen.
 I've been using 15/15/15 for the BGBlack's color RGB values, and I think I like it more than 13/13/13. Also, the ClickPositionBlack's color I'm using is 72/72/72 while ClickPositionWhite's color is 96/96/96.
+
+4/6 - Fristian
+A small bugfix. It used to be possible to freeze enemies you couldn't see if you clicked on the correct position they were at relative to the other camera. For instance if an enemy was coming at playerWhite from the left side offscreen (and thus, basically under the left half of the game), and you luckily left clicked that spot it was at, it would freeze that enemy. This has been fixed now. You can only freeze enemies if they are in view of the camera when you click on their position.
+Also guys, try changing the FOV on CameraWhite and CameraBlack to 115 instead of 110. I think it makes a pretty big difference, and I like it a little more.
+
+4/10 - Fristian
+Small things.
+I did a really small change in GenerateGraph.cs and it made a huge difference (like, a graph that would take 6 seconds to load now takes less than a second). The problem was that I was making a redundant check in Lookup(). in the if statement, I had an extra: && nodes.ContainsValue(test). But see, the thing is that I already have another dictionary that is nodes, but reversed called sedon, so I don't need to check for values in nodes, I can just check for keys in sedon, which I do two lines later with TryGetValue. So a friendly reminder when using hashtables/dictionaries in C#. ContainsValue is slow! If you can avoid using it, do so. Use TryGetValue as often as you can.
+Another thing, I made collisions a bit different. It works similar to how it did before, but the player now should never phase through the wall again. In order for it to work, you'll need to make both player's collider2D not triggers (uncheck isTrigger) and make the rigidbodies not kinematic (uncheck isKinematic). Then it'll be fine. Let me know if you still have any problems (like the camera moving without the player or something.
