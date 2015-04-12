@@ -26,7 +26,7 @@ public class EnemyController : MonoBehaviour {
 	private State me;
 	
 	private LayerMask nodeMask;
-	private LayerMask nodeAndEnemy;
+	private LayerMask ignoreThese;
 
 	private Color originalColor;
 	private Color frozenColor = Color.blue;
@@ -52,7 +52,7 @@ public class EnemyController : MonoBehaviour {
 			playerTag = "PlayerWhite";
 		playerObj = GameObject.FindWithTag(playerTag);
 		nodeMask = LayerMask.GetMask("Node");
-		nodeAndEnemy = LayerMask.GetMask("Node","Enemy");
+		ignoreThese = ~LayerMask.GetMask("Node","Enemy","Ignore Raycast");
 		source = playerObj.GetComponent<AudioSource>();
 	}
 
@@ -60,7 +60,7 @@ public class EnemyController : MonoBehaviour {
 		Vector2 currentPos = new Vector2(from.x, from.y);
 		Vector2 followPos = new Vector2(followMe.transform.position.x, followMe.transform.position.y);
 		Vector2 dist = followPos-currentPos;
-		RaycastHit2D hit = Physics2D.CircleCast(currentPos, sightRadius, dist, dist.magnitude, ~nodeAndEnemy);
+		RaycastHit2D hit = Physics2D.CircleCast(currentPos, sightRadius, dist, dist.magnitude, ignoreThese);
 		if ((hit.collider == null) || (hit.collider.name==followMe.name || hit.collider.tag == playerTag))
 			return true;
 		else
