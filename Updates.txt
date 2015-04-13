@@ -112,3 +112,12 @@ Before pushing to Github, I assume it's best if we have the latest commit downlo
 When creating a new level, instead of just creating it in your own scene, I suggest copying one of my level scenes, pasting it as a new, and just removing/replacing all the walls and redefining the graph. That's cuz I tend to keep up the things that I change in those scenes, like the FOV change to 115, the player's collider/rigidbodies, the click position's color change to 72/72/72 and 96/96/96, and any tags/layers/audiosources that come with stuff like that. To avoid wondering why something's not working and realizing it's because your players weren't tagged as PlayerBlack/PlayerWhite or were missing an audiosource, or something silly, just use copies of my scenes.
 I asked Josh to change the goal prefab to the 'Enemy' layer to prevent enemies from not having vision when within the goal's collider, but that turned out to not be a very good solution, so I fixed it by changing a few lines in the EnemyController script and changing the layer to 'Ignore Raycast'. From now on, if we want objects to be in the level that aren't supposed to be obstacles the enemies can't see you behind (like a goal object, or a removable barrier object), give those objects the 'Ignore Raycast' layer.
 I also removed the rigidbody on EnemyMissile, something I forgot to do when we added ridigbodies to the walls.
+
+4/13 - Dylan
+Added in a script to introduce idling to the game. The basic premise of the script right now is that it is attached to the main camera and it controls both players idling at the same time. All that needs to be added to a scene to have idling is an extra object on each player called IdleWhite and IdleBlack. The best way to do this is to -
+1. copy and paste the background layer
+2. change the name to IdleWhite or IdleBlack depending on the player
+3. change the sorting layer of the new object to “Player”
+4. edit the z-value of the layer to -5
+As it is, the idling mechanic does not increase spawn rates yet
+For a sample, it is implemented on Level0

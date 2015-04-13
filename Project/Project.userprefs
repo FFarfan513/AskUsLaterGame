@@ -1,17 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\ClickToMove.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ClickToMove.cs">
     <Files>
-      <File FileName="Assets\Scripts\ClickToMove.cs" Line="22" Column="47" />
-      <File FileName="Assets\Scripts\EnemyRotater.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemyController.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\GenerateGraph.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\MoveTo.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemySeeker.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemySpawnerController.cs" Line="37" Column="6" />
-      <File FileName="Assets\Scripts\PlayMusic.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\CenterOn.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\EnemyMissile.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/ClickToMove.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

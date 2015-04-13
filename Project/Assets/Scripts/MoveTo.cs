@@ -5,6 +5,7 @@ public class MoveTo : MonoBehaviour {
 	private Vector3 currentPosition;
 	private Vector3 heading;
 	private Vector3 moveHere;
+	public bool isMoving;
 	public GameObject followMe;
 	public float moveSpeed;
 	private float bounceDist = 0.15f;
@@ -15,6 +16,7 @@ public class MoveTo : MonoBehaviour {
 
 	void Start () {
 		currentPosition = transform.position;
+		isMoving = false;
 		//timestamp = 0f;
 	}
 	
@@ -26,10 +28,12 @@ public class MoveTo : MonoBehaviour {
 		//this is to prevent that weird shaking that happens a lot.
 		if (Vector3.Distance(currentPosition,moveHere) < 0.1f) {
 			transform.position = moveHere;
+			isMoving = false;
 		}
 		else {
 			Vector3 target = heading * moveSpeed + currentPosition;
 			transform.position = Vector3.Lerp(currentPosition, target, Time.deltaTime);
+			isMoving = true;
 			/*
 			if (Time.time >= timestamp) {
 				Invoke("createRipple", 0.001F);
