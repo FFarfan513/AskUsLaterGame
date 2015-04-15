@@ -10,7 +10,7 @@ public class EnemySeeker : MonoBehaviour {
 	private Vector3 followPos;
 
 	void Start() {
-		controller = gameObject.GetComponent<EnemyController>();
+		controller = this.GetComponent<EnemyController>();
 		path = new List<int>();
 	}
 	
@@ -70,6 +70,8 @@ public class EnemySeeker : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
+		if (controller == null)
+			return;
 		if (other.tag == controller.GetPlayerTag()) {
 			controller.Damage();
 			controller.KillMe();

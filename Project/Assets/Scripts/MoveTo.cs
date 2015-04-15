@@ -16,7 +16,6 @@ public class MoveTo : MonoBehaviour {
 
 	void Start () {
 		currentPosition = transform.position;
-		isMoving = false;
 		//timestamp = 0f;
 	}
 	
@@ -48,7 +47,6 @@ public class MoveTo : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D other) {
-		//other.
 		//this makes us bounce back a bit, so that we can't phase into the wall
 		if (other.gameObject.tag == "Wall") {
 			transform.position += (-heading*bounceDist);
@@ -57,6 +55,7 @@ public class MoveTo : MonoBehaviour {
 	}
 
 	void OnCollisionStay2D() {
+		//This is so that in case the game thinks we've already "entered" the wall, and it won't trigger the OnCollisionEnter method
 		followMe.transform.position = transform.position;
 	}
 

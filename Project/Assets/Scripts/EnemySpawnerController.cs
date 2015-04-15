@@ -7,7 +7,6 @@ public class EnemySpawnerController : MonoBehaviour {
 	public float myMaxRangeToSpawn; // Maximum distance to player to allow spawning
 	private float myChance;			// Used to determine when to spawn
 	private float myDistance;		// Current distance from this spawner to the player
-	private int myDeadlyButton;		// 0 == Killed by left click, 1 == Killed by right click
 	public int maxCanSpawn;			// Maximum number of enemies this spawner can spawn
 	private int childrenSpawned;	// Current number of enemies this spawner has spawned
 	public int noSpawnTime;			// Time the spawner waits after spawning before considering spawning again
@@ -18,18 +17,15 @@ public class EnemySpawnerController : MonoBehaviour {
 	public float myMoveSpeed;		// The (initial) move speed of the objects we spawn
 	public float myFrozenSeconds;	// The amount of time an object spends frozen
 
-	private float cameraLeniency = 0.2f;
+	private float cameraLeniency = 0.05f;
 	private Camera cam;
-	//private float idleConstant = 1;
 
 	void Start() {
 		childrenSpawned = 0;
 		if (transform.position.x < 0) {
-			myDeadlyButton = 1;
 			cam = Camera.main;
 		}
 		else {
-			myDeadlyButton = 0;
 			foreach (Camera c in Camera.allCameras) {
 				if (c.gameObject.name == "CameraWhite") {
 					cam = c;
@@ -43,7 +39,6 @@ public class EnemySpawnerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//DrawRange();
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
 			s.enabled = !s.enabled;
@@ -51,7 +46,6 @@ public class EnemySpawnerController : MonoBehaviour {
 	
 		// Recalculate distance to player every Update
 		myDistance = Vector3.Distance(transform.position, followThis.transform.position);
-		//Debug.Log(myDistance);
 
 		// Decrease noSpawnTime every Update
 		if (myCountdown > 0) {
@@ -68,12 +62,7 @@ public class EnemySpawnerController : MonoBehaviour {
 			if (myChance <= chanceToSpawn) {
 				myCountdown = noSpawnTime;
 				childrenSpawned++;
-				/*if (this side is idle for too long) {
-					Spawn(myMoveSpeed + idleConstant++);
-					myChance to spawn goes up
-				}
-				else */
-					Spawn(myMoveSpeed);
+				Spawn(myMoveSpeed);
 			}
 		}
 
@@ -104,7 +93,6 @@ public class EnemySpawnerController : MonoBehaviour {
 	//This is the part that's shared between all the different spawnings
 	void Init(EnemyController c, float speed) {
 		c.myParentSpwaner = transform.gameObject;
-		c.deadlyMouseButton = myDeadlyButton;
 		c.moveSpeed = speed;
 		c.followMe = followThis;
 		c.frozenSeconds = myFrozenSeconds;
@@ -113,26 +101,12 @@ public class EnemySpawnerController : MonoBehaviour {
 	bool NotNearScreen() {
 		//The bottom-left of the camera is (0,0); the top-right is (1,1).
 		Vector3 relativePos = cam.WorldToViewportPoint(transform.position);
-		if (relativePos.x>(1+cameraLeniency) || relativePos.x<(-cameraLeniency) ||
-		    relativePos.y>(1+cameraLeniency) || relativePos.y<(-cameraLeniency))
-			return true;
-		else
-			return false;
+		return (relativePos.x>(1+cameraLeniency) || relativePos.x<(-cameraLeniency) ||
+		        relativePos.y>(1+cameraLeniency) || relativePos.y<(-cameraLeniency));
 	}
 
 	public void DecrementChildren() {
 		childrenSpawned--;
 	}
 
-	void DrawRange() {
-		Debug.DrawRay (transform.position,new Vector3(-myMaxRangeToSpawn,0,0),Color.red);
-		Debug.DrawRay (transform.position,new Vector3(myMaxRangeToSpawn,0,0),Color.red);
-		Debug.DrawRay (transform.position,new Vector3(0,myMaxRangeToSpawn,0),Color.red);
-		Debug.DrawRay (transform.position,new Vector3(0,-myMaxRangeToSpawn,0),Color.red);
-		Debug.DrawRay (transform.position,new Vector3(1,1,0).normalized * myMaxRangeToSpawn,Color.red);
-		Debug.DrawRay (transform.position,new Vector3(-1,-1,0).normalized * myMaxRangeToSpawn,Color.red);
-		Debug.DrawRay (transform.position,new Vector3(-1,1,0).normalized * myMaxRangeToSpawn,Color.red);
-		Debug.DrawRay (transform.position,new Vector3(1,-1,0).normalized * myMaxRangeToSpawn,Color.red);
-	}
-	
 }

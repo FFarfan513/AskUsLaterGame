@@ -15,7 +15,7 @@ public class EnemyController : MonoBehaviour {
 	public GameObject followMe;
 	public GameObject myParentSpwaner;
 	public float moveSpeed;
-	public int deadlyMouseButton;
+	private float initialSpeed;
 	public float frozenSeconds;
 
 	private SpriteRenderer render;
@@ -40,16 +40,19 @@ public class EnemyController : MonoBehaviour {
 	public AudioClip killSound;
 	private float lowPitch = 0.7f, highPitch = 1.1f;
 
-	//Each enemy knows which side it's on based on it's deadlyMouseButton
+	//Each enemy knows which side it's on
 	void Start() {
 		me = State.Idle;
 		render = gameObject.GetComponent<SpriteRenderer>();
-		sightRadius = render.bounds.extents.magnitude + 0.05f;
+		sightRadius = render.bounds.extents.magnitude + 0.01f;
 		originalColor = render.color;
-		if (deadlyMouseButton == 1)
+		initialSpeed = moveSpeed;
+		if (transform.position.x < 0) {
 			playerTag = "PlayerBlack";
-		else if (deadlyMouseButton == 0)
+		}
+		else {
 			playerTag = "PlayerWhite";
+		}
 		playerObj = GameObject.FindWithTag(playerTag);
 		nodeMask = LayerMask.GetMask("Node");
 		ignoreThese = ~LayerMask.GetMask("Node","Enemy","Ignore Raycast");
@@ -210,6 +213,7 @@ public class EnemyController : MonoBehaviour {
 		me = State.Idle;
 		this.GetComponent<SpriteRenderer>().color = originalColor;
 		frozenCountdown = 0;
+		moveSpeed = initialSpeed;
 	}
 
 	void FixedUpdate() {
