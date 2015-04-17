@@ -10,7 +10,7 @@ public class IdleController : MonoBehaviour {
 	private SpriteRenderer fogColor;
 	private float fogSpeed = 3/255.0f;
 	private int waitTime = 130;
-	private int spawnTime = 80;
+	private int spawnTime = 110;
 	private int coolDown;
 
 	//prevents the idle check until the player clicks at least once
@@ -100,7 +100,6 @@ public class IdleController : MonoBehaviour {
 		}
 	}
 
-	//Not 100% finished yet. I sometimes get strange errors.
 	void SpawnEnemies() {
 		Vector3 bottomLeft  = cam.ViewportToWorldPoint(new Vector3(0.1f,0.1f,CenterOn.cameraZ));
 		Vector3 topLeft     = cam.ViewportToWorldPoint(new Vector3(0.1f,0.9f,CenterOn.cameraZ));
@@ -117,13 +116,11 @@ public class IdleController : MonoBehaviour {
 			if (edge.Length > 0) {
 				int r = Mathf.FloorToInt(Random.Range (0,edge.Length));
 				Vector3 pos = edge[r].transform.position;
-				if (Vector3.Distance (pos,player.transform.position) > 5.0f) {
-					GameObject child = (GameObject)Instantiate(enemyPrefab, pos, Quaternion.identity);
-					var c = child.GetComponent<EnemyController>();
-					c.moveSpeed = 2;
-					c.followMe = player;
-					c.frozenSeconds = 3;
-				}
+				GameObject child = (GameObject)Instantiate(enemyPrefab, pos, Quaternion.identity);
+				var c = child.GetComponent<EnemyController>();
+				c.moveSpeed = 2;
+				c.followMe = player;
+				c.frozenSeconds = 3;
 			}
 		}
 	}

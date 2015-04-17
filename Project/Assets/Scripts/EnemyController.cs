@@ -20,6 +20,7 @@ public class EnemyController : MonoBehaviour {
 
 	private SpriteRenderer render;
 	private float nodeDetectionRadius = 2.5f;
+	private float enemyResetRadius = 7f;
 	private float sightRadius; //how thick our enemy's line of sight is.
 	private string playerTag;
 
@@ -251,8 +252,8 @@ public class EnemyController : MonoBehaviour {
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
 			print("Damage!\n");
-			HealthController.DecrementLives();
-			//ResetEnemies();
+			HealthController.DecrementHP();
+			ResetEnemies();
 		}
 		else {
 			PlaySound(killSound);
@@ -269,10 +270,9 @@ public class EnemyController : MonoBehaviour {
 
 	//Not done yet I don't think. Not sure If I want all visible enemies to die, or just that side.
 	void ResetEnemies() {
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		Collider2D[] enemies = Physics2D.OverlapCircleAll(playerObj.transform.position,enemyResetRadius,LayerMask.GetMask("Enemy"));
 		foreach (var en in enemies) {
-			if (en.GetComponent<SpriteRenderer>().isVisible)
-				en.GetComponent<EnemyController>().KillMe();
+			en.GetComponent<EnemyController>().KillMe();
 		}
 	}
 

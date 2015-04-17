@@ -70,9 +70,7 @@ public class EnemySeeker : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
-		if (controller == null)
-			return;
-		if (other.tag == controller.GetPlayerTag()) {
+		if (controller != null && other.tag == controller.GetPlayerTag()) {
 			controller.Damage();
 			controller.KillMe();
 		}

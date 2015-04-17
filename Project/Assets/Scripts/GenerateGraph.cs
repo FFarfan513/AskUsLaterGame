@@ -23,11 +23,13 @@ public class GenerateGraph : MonoBehaviour {
 	
 	void Awake () {
 		noNodes = ~LayerMask.GetMask ("Node");
-		nodes = new Dictionary<int,Vector3>();
-		CreateNodes(leftRightUpDown1);
-		CreateNodes(leftRightUpDown2);
-		ConnectGraph();
-		//PrintGraph ();
+		if (!graphLoaded) {
+			nodes = new Dictionary<int,Vector3>();
+			CreateNodes(leftRightUpDown1);
+			CreateNodes(leftRightUpDown2);
+			ConnectGraph();
+			//PrintGraph ();
+		}
 	}
 	
 	void CreateNodes(float[] leftRightUpDown) {
