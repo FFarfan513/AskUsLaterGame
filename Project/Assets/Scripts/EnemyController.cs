@@ -251,6 +251,7 @@ public class EnemyController : MonoBehaviour {
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
 			print("Damage!\n");
+			HealthController.DecrementLives();
 			//ResetEnemies();
 		}
 		else {
