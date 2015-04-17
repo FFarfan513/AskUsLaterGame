@@ -23,13 +23,10 @@ public class GenerateGraph : MonoBehaviour {
 	
 	void Awake () {
 		noNodes = ~LayerMask.GetMask ("Node");
-		if (!graphLoaded) {
-			nodes = new Dictionary<int,Vector3>();
-			CreateNodes(leftRightUpDown1);
-			CreateNodes(leftRightUpDown2);
-			ConnectGraph();
-			//PrintGraph ();
-		}
+		nodes = new Dictionary<int,Vector3>();
+		CreateNodes(leftRightUpDown1);
+		CreateNodes(leftRightUpDown2);
+		ConnectGraph();
 	}
 	
 	void CreateNodes(float[] leftRightUpDown) {
@@ -128,18 +125,5 @@ public class GenerateGraph : MonoBehaviour {
 		if (Input.GetKey("escape"))
 			Application.Quit();
 	}
-	
-	void PrintGraph() {
-		foreach (var el in graph) {
-			string s = "[";
-			foreach (int adj in el.Value) {
-				if (s.Length > 1)
-					s = s + ", " + adj;
-				else
-					s = s + adj;
-			}
-			s = s + "]";
-			Debug.Log (el.Key + " connected to: " + s + "\n");
-		}
-	}
+
 }

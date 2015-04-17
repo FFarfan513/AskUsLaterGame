@@ -142,3 +142,7 @@ Also did a few other tiny things.
 Transformed HealthController into LevelTransitionController, which also handles transitioning to the next level upon reaching the goals.
 Renamed LevelRotator to Level1 to test level transitioning.
 Changed EnemyController to call LevelTranstionController instead of HealthController because it got removed.
+
+4/17 - Fristian again
+Created a Default scene to use that'll help with level making, among other things. Each level now has the LevelTransitionController attached to CameraMiddle which handles health and level transitions.
+Health is now a green bar in the middle which shrinks as you get hurt.

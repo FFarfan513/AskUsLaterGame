@@ -5,17 +5,35 @@ public class LevelTransitionController : MonoBehaviour {
 
 	private GameObject[] goals;
 	private readonly int maxHP = 8;
-	private static int HP, levelCounter;
+	private static int HP;
+	public static int thisLevel;
 	private bool g1, g2;
+	public GameObject health;
+	private static GameObject healthZero;
+	private static GameObject[] healthBarUp;
+	private static GameObject[] healthBarDown;
+	private float yscale;
 
-	void Awake() {
-		DontDestroyOnLoad(transform.gameObject);
-	}
-	
 	void Start() {
+		yscale = health.transform.localScale.y;
 		HP = maxHP;
-		levelCounter = 0;
+		healthZero = null;
+		healthBarUp = new GameObject[maxHP+1];
+		healthBarDown = new GameObject[maxHP+1];
+		DrawHP();
+		thisLevel = Application.loadedLevel;;
 		goals = GameObject.FindGameObjectsWithTag("Goal");
+	}
+
+	void DrawHP() {
+		healthZero = Instantiate(health, new Vector3(0,0,0), Quaternion.identity) as GameObject;
+		healthZero.name = "HP1";
+		for (int i=2; i<=maxHP; i++) {
+			healthBarUp[i] = Instantiate(health, new Vector3(0,(i-1)*(yscale*2),0), Quaternion.identity) as GameObject;
+			healthBarDown[i] = Instantiate(health, new Vector3(0,-(i-1)*(yscale*2),0), Quaternion.identity) as GameObject;
+			healthBarUp[i].name = "HP"+i;
+			healthBarDown[i].name = "HP"+i;
+		}
 	}
 
 	void Update() {
@@ -26,7 +44,6 @@ public class LevelTransitionController : MonoBehaviour {
 			
 			if ( g1 && g2 ) {
 				goals = null;
-				levelCounter++;
 				loadNextLevel();
 			}
 		}
@@ -34,30 +51,22 @@ public class LevelTransitionController : MonoBehaviour {
 
 	void loadNextLevel() {
 		HP = maxHP;
-		Application.LoadLevel("Level"+levelCounter);
+		Application.LoadLevel((thisLevel+1));
+		GenerateGraph.graphLoaded = false;
 		goals = GameObject.FindGameObjectsWithTag("Goal");
 	}
 
 	public static void DecrementHP(){
-		HP--;
-		if (HP <= 0) { // Gameover -> Continue Scene
-			Debug.Log ("death");
-			Application.LoadLevel("Continue");
-		}
-	}
-	
-	void OnGUI() {
-		if (HP > 0) {
-			GUIStyle style = new GUIStyle ();
-			style.fontSize = (int)(Screen.height*0.05);
-			style.normal.textColor = Color.white;
-			GUI.Label( new Rect( (float)(Screen.width*0.495), (float)(Screen.height*0.025), 100, 20 ), HP.ToString(), style );
+		if (HP == 1) {
+			GameObject.Destroy(healthZero);
 		}
 		else {
-			GUIStyle style = new GUIStyle ();
-			style.fontSize = (int)(Screen.height*0.1);
-			style.normal.textColor = Color.white;
-			GUI.Label( new Rect( (float)(Screen.width*0.5), (float)(Screen.height*0.025), 100, 20 ), "Gameover", style );
+			GameObject.Destroy(healthBarUp[HP]);
+			GameObject.Destroy(healthBarDown[HP]);
+		}
+		HP--;
+		if (HP <= 0) { // Gameover -> Continue Scene
+			Application.LoadLevel("Continue");
 		}
 	}
 

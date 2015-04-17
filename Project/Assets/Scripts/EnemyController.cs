@@ -45,7 +45,7 @@ public class EnemyController : MonoBehaviour {
 	void Start() {
 		me = State.Idle;
 		render = gameObject.GetComponent<SpriteRenderer>();
-		sightRadius = render.bounds.extents.magnitude + 0.01f;
+		sightRadius = render.bounds.extents.magnitude;
 		originalColor = render.color;
 		initialSpeed = moveSpeed;
 		if (transform.position.x < 0) {
@@ -236,8 +236,7 @@ public class EnemyController : MonoBehaviour {
 	//This is a placeholder though, we'll probably spice it up later.
 	void UnfreezingAnim() {
 		if (render.color == frozenColor) {
-			float r=0,g=0,b=135;
-			render.color = new Color(r/255.0f,g/255.0f,b/255.0f);}
+			render.color = new Color(0f,0f,135/255.0f);}
 		else
 			render.color = frozenColor;
 	}
@@ -251,7 +250,6 @@ public class EnemyController : MonoBehaviour {
 	public void Damage() {
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
-			print("Damage!\n");
 			LevelTransitionController.DecrementHP();
 			ResetEnemies();
 		}
