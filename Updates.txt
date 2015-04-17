@@ -137,3 +137,8 @@ Just added HealthController script. The script has a method called decrementLive
 4/17 - Fristian
 Implemented the enemy resetting thing. Enemies within a certain radius of the player get destroyed after you take damage.
 Also did a few other tiny things.
+
+4/17 - Will
+Transformed HealthController into LevelTransitionController, which also handles transitioning to the next level upon reaching the goals.
+Renamed LevelRotator to Level1 to test level transitioning.
+Changed EnemyController to call LevelTranstionController instead of HealthController because it got removed.
