@@ -9,6 +9,7 @@ public class ClickToMove : MonoBehaviour {
 	private Vector3 relativeMouse;
 	private MoveTo player;
 	private IdleController idler;
+
 	//let's Idler know if we've done a valid click this Update.
 	private bool validClick;
 
@@ -27,6 +28,7 @@ public class ClickToMove : MonoBehaviour {
 
 		//once the mouseButton is pressed, the object goes directly to that position
 		if (Input.GetMouseButtonDown(mouseButton)) {
+			//If this is the first click, get the idleController started
 			if (!idler.Started())
 				idler.Go();
 			mousePos = Input.mousePosition;
@@ -34,13 +36,15 @@ public class ClickToMove : MonoBehaviour {
 			relativeMouse = cam.ScreenToViewportPoint(mousePos);
 
 			if (WithinScreen()) {
-				idler.IsIdling(false);
+				if (idler.GetIsIdle())
+					idler.IsIdling(false);
 				validClick = true;
 				transform.position = cam.ScreenToWorldPoint(mousePos);
 			}
 		}
 		//if the other mouse button was pressed, see if there is an enemy you can neutralize there
-		if (Input.GetMouseButtonDown((mouseButton+1)%2)) {
+		else if (Input.GetMouseButtonDown((mouseButton+1)%2)) {
+			//If this is the first click, get the idleController started
 			if (!idler.Started())
 				idler.Go();
 			mousePos = Input.mousePosition;
@@ -48,10 +52,13 @@ public class ClickToMove : MonoBehaviour {
 			relativeMouse = cam.ScreenToViewportPoint(mousePos);
 
 			if (WithinScreen()) {
+				//Perform a raycast from your click position directly through the scene
 				Ray r = cam.ScreenPointToRay(mousePos);
 				RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(r,100,enemies);
+				//If you've clicked on at least one enemy, freeze all of them.
 				if (hits.Length > 0) {
-					idler.IsIdling(false);
+					if (idler.GetIsIdle())
+						idler.IsIdling(false);
 					validClick = true;
 					foreach(var hit in hits)
 						hit.transform.gameObject.GetComponent<EnemyController>().Neutralize();
@@ -60,8 +67,9 @@ public class ClickToMove : MonoBehaviour {
 		}
 
 		//If you haven't pressed a button, and you're stationary: start the idling.
-		if (!validClick && !player.isMoving) {
-			idler.IsIdling(true);
+		if (!validClick && !player.GetIsMoving()) {
+			if (!idler.GetIsIdle())
+				idler.IsIdling(true);
 		}
 	}
 

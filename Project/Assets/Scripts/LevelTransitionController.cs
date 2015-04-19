@@ -21,7 +21,7 @@ public class LevelTransitionController : MonoBehaviour {
 		healthBarUp = new GameObject[maxHP+1];
 		healthBarDown = new GameObject[maxHP+1];
 		DrawHP();
-		thisLevel = Application.loadedLevel;;
+		thisLevel = Application.loadedLevel;
 		goals = GameObject.FindGameObjectsWithTag("Goal");
 	}
 
@@ -52,7 +52,6 @@ public class LevelTransitionController : MonoBehaviour {
 	void loadNextLevel() {
 		HP = maxHP;
 		Application.LoadLevel((thisLevel+1));
-		GenerateGraph.graphLoaded = false;
 		goals = GameObject.FindGameObjectsWithTag("Goal");
 	}
 

@@ -66,6 +66,9 @@ public class IdleController : MonoBehaviour {
 		if (!id)
 			idleCount = 0;
 	}
+	public bool GetIsIdle() {
+		return isIdle;
+	}
 
 	//Lets us know that the first click has happened and to start checking for idling.
 	public void Go() {

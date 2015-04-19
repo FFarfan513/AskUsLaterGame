@@ -18,7 +18,6 @@ public class GenerateGraph : MonoBehaviour {
 	private int ID = 0;
 	
 	private bool showMe;
-	public static bool graphLoaded;
 	private LayerMask noNodes;
 	
 	void Awake () {
@@ -88,7 +87,6 @@ public class GenerateGraph : MonoBehaviour {
 				Debug.Log("Warning: node " + node.Key + " is not connected to any other node in this graph\n");
 			graph.Add(node.Key,connections);
 		}
-		graphLoaded = true;
 	}
 	
 	void Lookup(Vector3 pos, Vector3 test) {
@@ -105,7 +103,7 @@ public class GenerateGraph : MonoBehaviour {
 
 	void OnDrawGizmos() {
 		//This draws the paths between the nodes.
-		if (graphLoaded && showMe) {
+		if (showMe) {
 			Gizmos.color = Color.magenta;
 			foreach (var n in graph) {
 				Vector3 node;

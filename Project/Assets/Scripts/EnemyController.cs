@@ -20,7 +20,6 @@ public class EnemyController : MonoBehaviour {
 
 	private SpriteRenderer render;
 	private float nodeDetectionRadius = 2.5f;
-	private float enemyResetRadius = 7f;
 	private float sightRadius; //how thick our enemy's line of sight is.
 	private string playerTag;
 
@@ -32,6 +31,7 @@ public class EnemyController : MonoBehaviour {
 	private Color originalColor;
 	private Color frozenColor = Color.blue;
 	private int frozenCountdown;
+	public GameObject freezePrefab;
 
 	//This is all for audio
 	private GameObject playerObj;
@@ -200,13 +200,15 @@ public class EnemyController : MonoBehaviour {
 	
 	public void Neutralize() {
 		//If you want to make it so that clicking on a frozen enemy refreshes
-		//the time it spends frozen, remove this if statement here.
-		if(me != State.Paralyzed) {
+		//the time it spends frozen, remove this if statement here:
+		//if(me != State.Paralyzed) {
+			GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
+			fr.transform.rotation = this.transform.rotation;
 			frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
 			me = State.Paralyzed;
 			render.color = frozenColor;
 			PlaySound(freezeSound);
-		}
+		//}
 	}
 
 	void UnFreeze() {
@@ -251,7 +253,6 @@ public class EnemyController : MonoBehaviour {
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
 			LevelTransitionController.DecrementHP();
-			ResetEnemies();
 		}
 		else {
 			PlaySound(killSound);
@@ -263,14 +264,6 @@ public class EnemyController : MonoBehaviour {
 		if (source != null) {
 			source.pitch = Random.Range (lowPitch, highPitch);
 			source.PlayOneShot(clip);
-		}
-	}
-
-	//Not done yet I don't think. Not sure If I want all visible enemies to die, or just that side.
-	void ResetEnemies() {
-		Collider2D[] enemies = Physics2D.OverlapCircleAll(playerObj.transform.position,enemyResetRadius,LayerMask.GetMask("Enemy"));
-		foreach (var en in enemies) {
-			en.GetComponent<EnemyController>().KillMe();
 		}
 	}
 

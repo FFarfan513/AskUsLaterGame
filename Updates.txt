@@ -146,3 +146,17 @@ Changed EnemyController to call LevelTranstionController instead of HealthContro
 4/17 - Fristian again
 Created a Default scene to use that'll help with level making, among other things. Each level now has the LevelTransitionController attached to CameraMiddle which handles health and level transitions.
 Health is now a green bar in the middle which shrinks as you get hurt.
+
+4/18 - Fristian
+First things first, animations. I put a bunch of them in there.
+The first one is the ripple animation Will originally tinkered with a while ago. It looks pretty nice, but it's not all that important.
+The second one is the damage animation, which is important, since this is now how enemies around you are destroyed. When the player is hit by an enemy, a ring emits from the player's position, and enemies that touch that ring are destroyed. This is a little different from the way I was destroying enemies previously by using an overlapCircle, and it also means that it's not instant either.
+The next set of animations I did were all enemy based. When you neutralize an enemy, it plays a little animation to go with it. To do this I needed to make one for each enemy we had that was a different sprite (currently Square, Rotator, Spikey, and Missile), and attach it to EnemyController.
+And I know we need an animation for when you defeat an enemy, but I haven't done that yet.
+For all of these, I changed the RippleController.cs we had to AnimationController.cs and used that for all of them.
+Other things I did:
+I changed the way the camera moves a tiny bit. There shouldn't be any of those weird, 'the camera is moving without me' problems anymore, but if there is let me know. Also I put in a way to have the camera move directly to the player it's supposed to follow in case the camera does leave the player behind. The good thing about this is that if you want to drag the player around the scene to test certain parts of a level, you no longer have to drag the camera with it! The camera will zip directly to the player once the level starts.
+In ClickToMove, I did a few changes to prevent us from writing true or false to isIdle when isIdle is already true or false. I also removed the ability to double click. Sorry Dylan. It'll still have the same effect if you rapidly alternate left and right click, which might happen anyway, but be warned that now clicking both mouse buttons at the exact same time isn't going to have the same effect anymore.
+Per Will's request, I changed the way freezing works for now, where you can repeatedly freeze enemies that are already frozen to restart their freeze timer. It's easy to swap back and forth between the original way and this way to test them out (Just comment out/add back in the if statement in EnemyController's Neutralize() function).
+Also, since I gave up on trying to prevent us from having to reload the graph every time we reload a level scene, there's no need for the graphLoaded variable anymore, so I took it out.
+I also forgot that when I made the Default scene, I left that graph in there, so I cleaned it up. It should be good to go now.
