@@ -162,5 +162,6 @@ Also, since I gave up on trying to prevent us from having to reload the graph ev
 I also forgot that when I made the Default scene, I left that graph in there, so I cleaned it up. It should be good to go now.
 
 4/19 - Will
-Changed the scene Level1 to LevelFinal, added Level2, and edited the build settings accordingly. The current Level1 is just Default for now.
-I plan on making one more level soon. In the meantime, playtest Level2. Should idling on the left side spawn Missiles instead of Squares? Is it clear that the switch at the end is for the goal, which was back at the start?
+Changed the scene Level1 to LevelFinal, added Level2 and new Level1, and edited the build settings accordingly. Everyone please playtest Level1 and Level2.
+(For Level2) Should idling on the left side spawn Missiles instead of Squares?
+(For both) Is it clear what switches destroy which walls?
