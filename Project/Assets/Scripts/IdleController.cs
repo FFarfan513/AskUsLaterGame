@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class IdleController : MonoBehaviour {
 	private Camera cam;
+	private AudioSource intro;
+	private AudioSource loop;
+
 	private bool isIdle;
 	private int idleCount;
 	public GameObject fog;
@@ -23,6 +26,15 @@ public class IdleController : MonoBehaviour {
 		coolDown = spawnTime;
 		cam = this.camera;
 		player = this.GetComponent<CenterOn>().character;
+		Camera mid = null;
+		foreach (Camera c in Camera.allCameras) {
+			if (c.gameObject.name == "CameraMiddle") {
+				mid = c;
+				break;
+			}
+		}
+		intro = mid.GetComponent<PlayMusic>().intro;
+		loop = mid.GetComponent<PlayMusic>().loop;
 		fogColor = fog.GetComponent<SpriteRenderer>();
 		n = LayerMask.GetMask("Node");
 	}
@@ -55,6 +67,9 @@ public class IdleController : MonoBehaviour {
 				Color temp = fogColor.color;
 				temp.a = 0;
 				fogColor.color = temp;
+				if (intro != null)
+					intro.pan = 0f;
+				loop.pan = 0f;
 			}
 		}
 	}
@@ -63,8 +78,9 @@ public class IdleController : MonoBehaviour {
 	//if it's false, idlecount is set to 0.
 	public void IsIdling(bool id) {
 		isIdle = id;
-		if (!id)
+		if (!id) {
 			idleCount = 0;
+		}
 	}
 	public bool GetIsIdle() {
 		return isIdle;
@@ -81,6 +97,20 @@ public class IdleController : MonoBehaviour {
 
 	//Fogs up the screen by raising the fog object's alpha slowly.
 	Color FogUp() {
+		//Makes the music pan away from the side that's idling
+		if (loop.isPlaying) {
+			if (player.transform.position.x > 0)
+				loop.pan = Mathf.Round((loop.pan-fogSpeed) * 100f) / 100f;
+			else
+				loop.pan = Mathf.Round((loop.pan+fogSpeed) * 100f) / 100f;
+		}
+		else if (intro.isPlaying) {
+			if (player.transform.position.x > 0)
+				intro.pan = Mathf.Round((intro.pan-fogSpeed) * 100f) / 100f;
+			else
+				intro.pan = Mathf.Round((intro.pan+fogSpeed) * 100f) / 100f;
+		}
+		//the fogColor's alpha increases by fogSpeed
 		Color temp = fogColor.color;
 		float alpha = temp.a;
 		if (alpha >= 1.0) {
@@ -93,7 +123,7 @@ public class IdleController : MonoBehaviour {
 		}
 	}
 
-	//adds +2 to each visible enemy's speed. Can change this.
+	//adds +2 to each visible enemy's speed.
 	void SpeedUpVisibleEnemies() {
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 		Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
@@ -103,6 +133,7 @@ public class IdleController : MonoBehaviour {
 		}
 	}
 
+	//spawns enemies at nodes located at the edges of the screen if available
 	void SpawnEnemies() {
 		Vector3 bottomLeft  = cam.ViewportToWorldPoint(new Vector3(0.1f,0.1f,CenterOn.cameraZ));
 		Vector3 topLeft     = cam.ViewportToWorldPoint(new Vector3(0.1f,0.9f,CenterOn.cameraZ));

@@ -14,7 +14,7 @@ public class MoveTo : MonoBehaviour {
 	//count counts down by that number and is reset after it reaches 0
 	public GameObject ripplePrefab;
 	public GameObject destroyRingPrefab;
-	private int rippleSpeed = 22;
+	private readonly int rippleSpeed = 22;
 	private int count;
 
 	void Start () {
@@ -70,6 +70,8 @@ public class MoveTo : MonoBehaviour {
 		}
 	}
 
+	//If we run into an enemy, create the destroyRing around the player.
+	//calcuating damage will be done by the enemy.
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.tag == "Enemy") {
 			var en = other.gameObject.GetComponent<EnemyController>();
@@ -82,8 +84,7 @@ public class MoveTo : MonoBehaviour {
 		//This is so that in case the game thinks we've already "entered" the wall, and it won't trigger the OnCollisionEnter method
 		followMe.transform.position = transform.position;
 	}
-
-
+	
 	 void Ripple() {
 		if (ripplePrefab!=null) {
 			GameObject rip = Instantiate(ripplePrefab, transform.position, Quaternion.identity) as GameObject;

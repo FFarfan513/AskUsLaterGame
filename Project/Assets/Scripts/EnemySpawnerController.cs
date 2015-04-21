@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemySpawnerController : MonoBehaviour {
 
 	public float chanceToSpawn;		// Percent chance needed to spawn per Update (between 0 and 100)
-	public float myMaxRangeToSpawn; // Maximum distance to player to allow spawning
+	public float spawnRange; 		// Maximum distance to player to allow spawning
 	private float myChance;			// Used to determine when to spawn
 	private float myDistance;		// Current distance from this spawner to the player
 	public int maxCanSpawn;			// Maximum number of enemies this spawner can spawn
@@ -17,7 +17,7 @@ public class EnemySpawnerController : MonoBehaviour {
 	public float myMoveSpeed;		// The (initial) move speed of the objects we spawn
 	public float myFrozenSeconds;	// The amount of time an object spends frozen
 
-	private float cameraLeniency = 0.05f;
+	private float cameraLeniency = 0.1f;
 	private Camera cam;
 
 	void Start() {
@@ -26,20 +26,19 @@ public class EnemySpawnerController : MonoBehaviour {
 			cam = Camera.main;
 		}
 		else {
+			//looping through all cameras is faster than using .FindWithTag
 			foreach (Camera c in Camera.allCameras) {
-				if (c.gameObject.name == "CameraWhite") {
+				if (c.gameObject.tag == "WhiteCamera") {
 					cam = c;
 					break;
 				}
 			}
 		}
-
-		transform.localScale = new Vector3(myMaxRangeToSpawn+3,myMaxRangeToSpawn+3,0);
+		transform.localScale = new Vector3(spawnRange+3,spawnRange+3,0);
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Z)) {
+		if (Input.GetKeyDown(KeyCode.X)) {
 			SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
 			s.enabled = !s.enabled;
 		}
@@ -53,7 +52,7 @@ public class EnemySpawnerController : MonoBehaviour {
 		}
 
 		// If player is within range, and spawned less than max children, and not on cooldown
-		if (myDistance <= myMaxRangeToSpawn && NotNearScreen() &&
+		if (myDistance <= spawnRange && NotNearScreen() &&
 		    childrenSpawned < maxCanSpawn && myCountdown == 0) {
 
 			// Roll the dice
@@ -73,24 +72,7 @@ public class EnemySpawnerController : MonoBehaviour {
 		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
 		Init(child.GetComponent<EnemyController>(), speed);
 	}
-
-	//Irregular spawns. We might not end up needing/using these:
-
-	//Spawns enemies with the same sprite as the original, but either scaled larger or smaller
-	void SpawnScaled(float speed, float scaling) {
-		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-		child.transform.localScale = new Vector3(scaling,scaling,1);
-		Init(child.GetComponent<EnemyController>(), speed);
-	}
-
-	//Spawns enemies with the same behavior, but a different sprite
-	void SpawnDifferent(float speed, Sprite different) {
-		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-		child.GetComponent<SpriteRenderer>().sprite = different;
-		Init(child.GetComponent<EnemyController>(), speed);
-	}
-
-	//This is the part that's shared between all the different spawnings
+	
 	void Init(EnemyController c, float speed) {
 		c.myParentSpwaner = transform.gameObject;
 		c.moveSpeed = speed;

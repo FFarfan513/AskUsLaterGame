@@ -3,69 +3,92 @@ using System.Collections;
 
 public class LevelTransitionController : MonoBehaviour {
 
-	private GameObject[] goals;
+	public GameObject goalLeft;
+	public GameObject goalRight;
+	private GoalController g1, g2;
+	public static int thisLevel;
+
+	public GameObject health;
 	private readonly int maxHP = 8;
 	private static int HP;
-	public static int thisLevel;
-	private bool g1, g2;
-	public GameObject health;
 	private static GameObject healthZero;
 	private static GameObject[] healthBarUp;
 	private static GameObject[] healthBarDown;
-	private float yscale;
 
-	void Start() {
+	private float yscale;
+	
+	void Awake() {
+		//Set up the goals
+		thisLevel = Application.loadedLevel;
+		g1 = goalLeft.GetComponent<GoalController>();
+		g2 = goalRight.GetComponent<GoalController>();
+
+		//Set up the HealthBar
 		yscale = health.transform.localScale.y;
 		HP = maxHP;
 		healthZero = null;
 		healthBarUp = new GameObject[maxHP+1];
 		healthBarDown = new GameObject[maxHP+1];
 		DrawHP();
-		thisLevel = Application.loadedLevel;
-		goals = GameObject.FindGameObjectsWithTag("Goal");
 	}
 
 	void DrawHP() {
 		healthZero = Instantiate(health, new Vector3(0,0,0), Quaternion.identity) as GameObject;
-		healthZero.name = "HP1";
+		healthZero.name = "HP";
+		//For each health point greater than one, create two blocks of HP, one above and the other below.
 		for (int i=2; i<=maxHP; i++) {
 			healthBarUp[i] = Instantiate(health, new Vector3(0,(i-1)*(yscale*2),0), Quaternion.identity) as GameObject;
 			healthBarDown[i] = Instantiate(health, new Vector3(0,-(i-1)*(yscale*2),0), Quaternion.identity) as GameObject;
 			healthBarUp[i].name = "HP"+i;
 			healthBarDown[i].name = "HP"+i;
+			//making each tick of HP a child of healthZero makes things cleaner in the Hierarchy.
+			healthBarUp[i].transform.parent = healthZero.transform;
+			healthBarDown[i].transform.parent = healthZero.transform;
 		}
 	}
 
+	//If both goals have been reached, reset them and start fading to the next level
 	void Update() {
-		if (goals != null && goals[0] != null && goals[1] != null) {
-			
-			g1 = goals[0].GetComponent<GoalController>().goalReached;
-			g2 = goals[1].GetComponent<GoalController>().goalReached;
-			
-			if ( g1 && g2 ) {
-				goals = null;
-				loadNextLevel();
-			}
+		if ( g1.Reached() && g2.Reached() ) {
+			g1.Reset();
+			g2.Reset();
+			StartCoroutine(Fading(true));
+		}
+	}
+	
+	//Slows down time for a bit and fades the volume down.
+	IEnumerator Fading(bool alive) {
+		Time.timeScale = 0.2f;
+		for (int i=0; i<20; i++) {
+			AudioListener.volume = Mathf.Round((AudioListener.volume-0.05f) * 100f) / 100f;
+			yield return new WaitForSeconds(0.02f);
+		}
+		Time.timeScale = 1f;
+		if (alive) {
+			Application.LoadLevel((thisLevel+1));
+		}
+		else {
+			Application.LoadLevel("Continue");
 		}
 	}
 
-	void loadNextLevel() {
-		HP = maxHP;
-		Application.LoadLevel((thisLevel+1));
-		goals = GameObject.FindGameObjectsWithTag("Goal");
+	void OnLevelWasLoaded(int level) {
+		if (AudioListener.volume != 1f)
+			AudioListener.volume = 1f;
 	}
 
-	public static void DecrementHP(){
+	public void DecrementHP() {
 		if (HP == 1) {
 			GameObject.Destroy(healthZero);
 		}
-		else {
+		else if (HP > 1) {
 			GameObject.Destroy(healthBarUp[HP]);
 			GameObject.Destroy(healthBarDown[HP]);
 		}
 		HP--;
-		if (HP <= 0) { // Gameover -> Continue Scene
-			Application.LoadLevel("Continue");
+		if (HP == 0) { // Gameover -> Continue Scene
+			HP = -1;
+			StartCoroutine(Fading(false));
 		}
 	}
 

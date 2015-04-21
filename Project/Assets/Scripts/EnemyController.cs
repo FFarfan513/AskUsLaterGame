@@ -22,6 +22,7 @@ public class EnemyController : MonoBehaviour {
 	private float nodeDetectionRadius = 2.5f;
 	private float sightRadius; //how thick our enemy's line of sight is.
 	private string playerTag;
+	private LevelTransitionController main;
 
 	private State me;
 	
@@ -45,21 +46,37 @@ public class EnemyController : MonoBehaviour {
 	void Start() {
 		me = State.Idle;
 		render = gameObject.GetComponent<SpriteRenderer>();
-		sightRadius = render.bounds.extents.magnitude;
+		sightRadius = render.bounds.extents.magnitude + 0.01f;
 		originalColor = render.color;
 		initialSpeed = moveSpeed;
+
 		if (transform.position.x < 0) {
 			playerTag = "PlayerBlack";
 		}
 		else {
 			playerTag = "PlayerWhite";
 		}
-		playerObj = GameObject.FindWithTag(playerTag);
+
+		if (followMe.tag == playerTag) {
+			playerObj = followMe;
+		}
+		else {
+			playerObj = GameObject.FindWithTag(playerTag);
+		}
+
+		foreach (Camera c in Camera.allCameras) {
+			if (c.gameObject.name == "CameraMiddle") {
+				main = c.gameObject.GetComponent<LevelTransitionController>();
+				break;
+			}
+		}
+
 		nodeMask = LayerMask.GetMask("Node");
 		ignoreThese = ~LayerMask.GetMask("Node","Enemy","Ignore Raycast");
 		source = playerObj.GetComponent<AudioSource>();
 	}
 
+	//checks vision by casting a circlecast from the Vector3 from (usually transform.position) towards followMe.
 	public bool CanSeeIt(Vector3 from) {
 		Vector2 currentPos = new Vector2(from.x, from.y);
 		Vector2 followPos = new Vector2(followMe.transform.position.x, followMe.transform.position.y);
@@ -187,28 +204,27 @@ public class EnemyController : MonoBehaviour {
 		}
 	}
 
-	
-	public void PrintPath(List<int> thispath) {
-		string p = "";
-		foreach (int n in thispath) {
-			p = p + n + ", ";
-		}
-		if (p.Length > 2) {
-			Debug.Log (p.Substring (0,p.Length-2) + "\n");
-		}
-	}
-	
 	public void Neutralize() {
-		//If you want to make it so that clicking on a frozen enemy refreshes
-		//the time it spends frozen, remove this if statement here:
-		//if(me != State.Paralyzed) {
-			GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
-			fr.transform.rotation = this.transform.rotation;
-			frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
-			me = State.Paralyzed;
-			render.color = frozenColor;
-			PlaySound(freezeSound);
-		//}
+		GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
+		fr.transform.rotation = this.transform.rotation;
+		frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
+		me = State.Paralyzed;
+		render.color = frozenColor;
+		PlaySound(freezeSound);
+	}
+
+	//if this enemy is paralyzed, start a countdown. after it's up, unfreeze this enemy.
+	void FixedUpdate() {
+		if (me == State.Paralyzed && frozenCountdown > 0) {
+			frozenCountdown--;
+			if (frozenCountdown <= 60) {
+				if (frozenCountdown%10 == 0)
+					UnfreezingAnim();
+			}
+			if (frozenCountdown <= 0) {
+				UnFreeze();
+			}
+		}
 	}
 
 	void UnFreeze() {
@@ -219,23 +235,8 @@ public class EnemyController : MonoBehaviour {
 		moveSpeed = initialSpeed;
 	}
 
-	void FixedUpdate() {
-		if (me == State.Paralyzed && frozenCountdown > 0) {
-			frozenCountdown--;
-			if (frozenCountdown <= 60) {
-				//Placeholder thing
-				if (frozenCountdown%10 == 0)
-					UnfreezingAnim();
-			}
-			if (frozenCountdown <= 0) {
-				UnFreeze();
-			}
-		}
-	}
-
-	//Essentially what I'm doing as a placeholder is that after a specific interval, it will switch it's color
+	//Essentially what I'm doing is that after a specific interval, it will switch it's color
 	//to a darker blue shade, and back. It'll flash three times before unfreezing.
-	//This is a placeholder though, we'll probably spice it up later.
 	void UnfreezingAnim() {
 		if (render.color == frozenColor) {
 			render.color = new Color(0f,0f,135/255.0f);}
@@ -244,23 +245,38 @@ public class EnemyController : MonoBehaviour {
 	}
 	
 	public void KillMe() {
+		//if this enemy is not paralyzed it creates the damage animation (freeze animation with the red color)
+		if (me != State.Paralyzed) {
+			GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
+			fr.transform.rotation = this.transform.rotation;
+			fr.GetComponent<SpriteRenderer>().color = originalColor;
+		}
+		//if this enemy is paralyzed, it recreates the freeze animation 
+		else {
+			GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
+			fr.transform.rotation = this.transform.rotation;
+		}
+
 		if (myParentSpwaner != null)
 			myParentSpwaner.GetComponent<EnemySpawnerController>().DecrementChildren();
 		DestroyObject(gameObject);
 	}
 
+	//Called by other objects to inflict damage to the player.
 	public void Damage() {
+		//if this enemy is not paralyzed it decrements the player's HP and plays the damageSound
 		if (me != State.Paralyzed) {
 			PlaySound(damageSound);
-			LevelTransitionController.DecrementHP();
+			main.DecrementHP();
 		}
+		//if this enemy is paralyzed, it plays the killSound
 		else {
 			PlaySound(killSound);
 		}
-		//The Killing of the object goes in the enemy specific scripts.
+		//The destruction of the object goes in the enemy specific scripts.
 	}
 
-	public void PlaySound(AudioClip clip){
+	public void PlaySound(AudioClip clip) {
 		if (source != null) {
 			source.pitch = Random.Range (lowPitch, highPitch);
 			source.PlayOneShot(clip);

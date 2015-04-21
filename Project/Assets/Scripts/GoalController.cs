@@ -3,46 +3,60 @@ using System.Collections;
 
 public class GoalController : MonoBehaviour {
 
-	private GameObject myPlayer;
-	public bool goalReached;
+	private GameObject player;
+	private bool goalReached = false;
 	public float turnSpeed;
 	public GameObject wallToRemove;
-	//public GameObject myRipplePrefab;
-	//public float rippleSpeed;
-	//private float timestamp;
+
+	public AudioClip unlockSound;
+	private AudioSource onGoal;
+	private float lowPitch = 1f, highPitch = 1.04f;
 	
 	void Start() {
-		goalReached = false;
-		myPlayer = findPlayer();
+		player = FindPlayer();
+		onGoal = this.GetComponent<AudioSource>();
+		if (transform.position.x > 0)
+			onGoal.pan = 0.2f;
+		else
+			onGoal.pan = -0.2f;
 	}
 
 	void Update() {
 		Rotate();
-		/*
-		if (goalReached && Time.time >= timestamp) {
-			Invoke("createRipple", 0.001F);
-			timestamp = Time.time + rippleSpeed;
-		}
-		*/
+		//Let's us skip levels for testing transitions by pressing S
+		if (Input.GetKeyDown (KeyCode.S))
+			goalReached = true;
+
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
-		if (other.tag == myPlayer.tag) {
-			if (wallToRemove == null) {		// if goal
+		if (other.tag == player.tag) {
+			//if goal
+			if (wallToRemove == null) {
 				goalReached = true;
-				turnSpeed *= 4f;
+				turnSpeed *= 5f;
 			}
-			else {							// if switch
+			//if switch
+			else {
+				AudioSource.PlayClipAtPoint(unlockSound,transform.position);
 				Destroy(wallToRemove);
 				Destroy(gameObject);
 			}
 		}
 	}
 
+	//Make the ambient noise as the player stays in the goal circle
+	void OnTriggerStay2D( Collider2D other ) {
+		if (other.tag == player.tag && !onGoal.isPlaying) {
+			onGoal.pitch = Random.Range (lowPitch, highPitch);
+			onGoal.Play();
+		}
+	}
+	
 	void OnTriggerExit2D( Collider2D other ) {
-		if (other.tag == myPlayer.tag) {
+		if (other.tag == player.tag) {
 			goalReached = false;
-			turnSpeed /= 4f;
+			turnSpeed /= 5f;
 		}
 	}
 
@@ -50,10 +64,17 @@ public class GoalController : MonoBehaviour {
 		transform.Rotate(Vector3.forward * turnSpeed * 50 * Time.deltaTime);
 	}
 
-	private GameObject findPlayer() {
+	private GameObject FindPlayer() {
 		if (transform.position.x < 0)
-			return GameObject.FindGameObjectWithTag("PlayerBlack");
+			return GameObject.FindWithTag("PlayerBlack");
 		else
-			return GameObject.FindGameObjectWithTag("PlayerWhite");
+			return GameObject.FindWithTag("PlayerWhite");
+	}
+
+	public bool Reached() {
+		return goalReached;
+	}
+	public void Reset() {
+		goalReached = false;
 	}
 }
