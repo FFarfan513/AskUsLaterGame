@@ -2,7 +2,12 @@
 using System.Collections;
 
 public class ContinueController : MonoBehaviour {
+	//private LevelTransitionController main;
 
+	void Update() {
+		if (Input.GetKeyDown (KeyCode.R))
+			Application.LoadLevel (LevelTransitionController.thisLevel);
+	}
 	/*
 	void OnMouseDown() {
 		if (this.name == "Yes") {

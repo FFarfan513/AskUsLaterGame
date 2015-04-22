@@ -149,7 +149,7 @@ public class IdleController : MonoBehaviour {
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 		Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
 		foreach (var en in enemies) {
-			if ( GeometryUtility.TestPlanesAABB(planes, en.collider2D.bounds) )
+			if (en.collider2D != null && GeometryUtility.TestPlanesAABB(planes, en.collider2D.bounds) )
 				en.GetComponent<EnemyController>().moveSpeed += 2;
 		}
 	}

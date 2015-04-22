@@ -34,7 +34,7 @@ public class EnemyMissile : MonoBehaviour {
 
 		if (controller.GetState() != EnemyController.State.Paralyzed &&
 		    controller.GetState() != EnemyController.State.HasSight) {
-			if (controller.CanSeeIt(transform.position+(transform.right*initialSpeed))) {
+			if (controller.CanSeeIt(transform.position+transform.up)) {
 				FaceMe();
 			}
 			controller.SetState(EnemyController.State.HasSight);
@@ -42,23 +42,20 @@ public class EnemyMissile : MonoBehaviour {
 	}
 
 	void FaceMe() {
-		Quaternion from = transform.rotation;
-		Vector3 dir = followMe.position - transform.position;
-		float angle = Mathf.Atan2 (dir.y, dir.x) * Mathf.Rad2Deg;
-		Quaternion to = Quaternion.AngleAxis (angle, Vector3.forward);
-		transform.rotation = Quaternion.RotateTowards(from,to,360f);
+		Vector3 dir = followMe.transform.position - transform.position;
+		transform.rotation = Quaternion.LookRotation(Vector3.forward,dir);
 	}
 
 	void MissileTowards() {
 		controller.moveSpeed += accel;
-		Vector3 movin = transform.right*controller.moveSpeed*Time.deltaTime;
+		Vector3 movin = transform.up*controller.moveSpeed*Time.deltaTime;
 		transform.position += movin;
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
 		if (other.tag == "Wall") {
 			//bounces you backwards
-			transform.Translate((-transform.right)*controller.moveSpeed*Time.deltaTime);
+			transform.Translate((-transform.up)*controller.moveSpeed*Time.deltaTime);
 			//resets the speed, flips the enemy backwards, and forces you to recheck your sight.
 			transform.Rotate (new Vector3(0,0,180));
 			controller.SetState (EnemyController.State.Idle);

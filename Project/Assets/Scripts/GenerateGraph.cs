@@ -19,6 +19,8 @@ public class GenerateGraph : MonoBehaviour {
 	
 	private bool showMe;
 	private LayerMask noNodes;
+	private bool paused;
+	private float musicVol;
 	
 	void Awake () {
 		noNodes = ~LayerMask.GetMask ("Node");
@@ -118,10 +120,16 @@ public class GenerateGraph : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (Input.GetKeyDown (KeyCode.Z))
+		if (Input.GetKeyDown(KeyCode.Z))
 			showMe = !showMe;
-		if (Input.GetKey("escape"))
-			Application.Quit();
+		if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.P)) && Time.timeScale==1f) {
+			musicVol = AudioListener.volume;
+			AudioListener.volume /= 3f;
+			Time.timeScale = 0f;
+		}
+		else if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.P)) && Time.timeScale==0f) {
+			AudioListener.volume = musicVol;
+			Time.timeScale = 1f;
+		}
 	}
-
 }

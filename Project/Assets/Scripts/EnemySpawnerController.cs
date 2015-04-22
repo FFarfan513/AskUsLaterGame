@@ -37,7 +37,7 @@ public class EnemySpawnerController : MonoBehaviour {
 		transform.localScale = new Vector3(spawnRange+3,spawnRange+3,0);
 	}
 	
-	void Update () {
+	void FixedUpdate () {
 		if (Input.GetKeyDown(KeyCode.X)) {
 			SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
 			s.enabled = !s.enabled;

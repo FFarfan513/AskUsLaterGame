@@ -14,17 +14,19 @@ public class MoveTo : MonoBehaviour {
 	//count counts down by that number and is reset after it reaches 0
 	public GameObject ripplePrefab;
 	public GameObject destroyRingPrefab;
-	private readonly int rippleSpeed = 22;
-	private int count;
+	private readonly float rippleSpeed = 0.4f;
+	private float count;
 
 	void Start () {
-		count = 0;
+		count = 0f;
 		currentPosition = transform.position;
+	}
+	void FixedUpdate() {
+		if (count>0)
+			count -= Time.deltaTime;
 	}
 	
 	void Update () {
-		if (count>0)
-			count--;
 		currentPosition = transform.position;
 		moveHere = followMe.transform.position;
 		heading = (moveHere - currentPosition).normalized;
@@ -34,10 +36,9 @@ public class MoveTo : MonoBehaviour {
 			//this is to prevent that weird shaking that happens a lot.
 			if (Vector3.Distance(currentPosition,moveHere) < 0.1f) {
 				transform.position = moveHere;
-				if (isMoving) {
+				if (isMoving)
 					isMoving = false;
-				}
-				if (count <= rippleSpeed-9)
+				if (count <= 0.2f)
 					Ripple();
 			}
 			else {
@@ -46,8 +47,8 @@ public class MoveTo : MonoBehaviour {
 				if (!isMoving)
 					isMoving = true;
 				if (count <= 0) {
-					Ripple();
 					count = rippleSpeed;
+					Ripple();
 				}
 			}
 		}

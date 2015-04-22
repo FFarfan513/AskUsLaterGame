@@ -16,20 +16,26 @@ public class LevelTransitionController : MonoBehaviour {
 	private static GameObject[] healthBarDown;
 
 	private float yscale;
+	private bool giveUp;
 	
 	void Awake() {
 		//Set up the goals
-		thisLevel = Application.loadedLevel;
-		g1 = goalLeft.GetComponent<GoalController>();
-		g2 = goalRight.GetComponent<GoalController>();
+		if (Application.loadedLevelName != "Continue")
+			thisLevel = Application.loadedLevel;
+		if (goalLeft != null)
+			g1 = goalLeft.GetComponent<GoalController>();
+		if (goalRight != null)
+			g2 = goalRight.GetComponent<GoalController>();
 
 		//Set up the HealthBar
-		yscale = health.transform.localScale.y;
-		HP = maxHP;
-		healthZero = null;
-		healthBarUp = new GameObject[maxHP+1];
-		healthBarDown = new GameObject[maxHP+1];
-		DrawHP();
+		if (health != null) {
+			yscale = health.transform.localScale.y;
+			HP = maxHP;
+			healthZero = null;
+			healthBarUp = new GameObject[maxHP+1];
+			healthBarDown = new GameObject[maxHP+1];
+			DrawHP();
+		}
 	}
 
 	void DrawHP() {
@@ -49,10 +55,14 @@ public class LevelTransitionController : MonoBehaviour {
 
 	//If both goals have been reached, reset them and start fading to the next level
 	void Update() {
-		if ( g1.Reached() && g2.Reached() ) {
+		if (g1!=null && g2 !=null && g1.Reached() && g2.Reached() ) {
 			g1.Reset();
 			g2.Reset();
 			StartCoroutine(Fading(true));
+		}
+		if (Input.GetKeyDown("escape") && Time.timeScale == 1f && !giveUp) {
+			giveUp = true;
+			StartCoroutine(Fading(false));
 		}
 	}
 	

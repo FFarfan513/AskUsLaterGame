@@ -14,7 +14,7 @@ public class PointerController : MonoBehaviour {
 		arrow = transform.GetComponent<SpriteRenderer>();
 	}
 
-	void Update() {
+	void FixedUpdate() {
 		//countsDown like a few other scripts have been doing.
 		//If the player has not been moving for a certain amount of time, show the arrow.
 		if (!player.GetIsMoving()) {
@@ -29,16 +29,18 @@ public class PointerController : MonoBehaviour {
 				countDown = waitTime;
 			arrow.enabled = false;
 		}
+		if((Time.timeScale>0 && Time.timeScale<1) && arrow.enabled)
+			arrow.enabled = false;
 		FaceTheGoal();
 	}
 
 	//This makes the arrow constantly rotate towards the goal object
 	void FaceTheGoal() {
-		Quaternion from = transform.rotation;
 		Vector3 dir = goal.transform.position - transform.position;
-		float angle = Mathf.Atan2 (dir.y, dir.x) * Mathf.Rad2Deg;
-		Quaternion to = Quaternion.AngleAxis (angle, Vector3.forward);
-		transform.rotation = Quaternion.RotateTowards(from,to,360f);
+		Quaternion look = Quaternion.LookRotation(Vector3.forward,dir);
+		if (transform.rotation != look) {
+			transform.rotation = look;
+		}
 	}
 	
 }
