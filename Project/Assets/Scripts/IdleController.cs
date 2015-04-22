@@ -6,6 +6,8 @@ public class IdleController : MonoBehaviour {
 	private Camera cam;
 	private AudioSource intro;
 	private AudioSource loop;
+	//musicVolume should be the same for both intro and loop.
+	private float musicVolume;
 
 	private bool isIdle;
 	private int idleCount;
@@ -35,6 +37,7 @@ public class IdleController : MonoBehaviour {
 		}
 		intro = mid.GetComponent<PlayMusic>().intro;
 		loop = mid.GetComponent<PlayMusic>().loop;
+		musicVolume = loop.volume;
 		fogColor = fog.GetComponent<SpriteRenderer>();
 		n = LayerMask.GetMask("Node");
 	}
@@ -67,9 +70,12 @@ public class IdleController : MonoBehaviour {
 				Color temp = fogColor.color;
 				temp.a = 0;
 				fogColor.color = temp;
-				if (intro != null)
+				if (intro != null) {
 					intro.pan = 0f;
+					intro.volume = musicVolume;
+				}
 				loop.pan = 0f;
+				loop.volume = musicVolume;
 			}
 		}
 	}
@@ -99,16 +105,10 @@ public class IdleController : MonoBehaviour {
 	Color FogUp() {
 		//Makes the music pan away from the side that's idling
 		if (loop.isPlaying) {
-			if (player.transform.position.x > 0)
-				loop.pan = Mathf.Round((loop.pan-fogSpeed) * 100f) / 100f;
-			else
-				loop.pan = Mathf.Round((loop.pan+fogSpeed) * 100f) / 100f;
+			ShiftMusic(loop);
 		}
-		else if (intro.isPlaying) {
-			if (player.transform.position.x > 0)
-				intro.pan = Mathf.Round((intro.pan-fogSpeed) * 100f) / 100f;
-			else
-				intro.pan = Mathf.Round((intro.pan+fogSpeed) * 100f) / 100f;
+		else if (intro != null && intro.isPlaying) {
+			ShiftMusic(intro);
 		}
 		//the fogColor's alpha increases by fogSpeed
 		Color temp = fogColor.color;
@@ -120,6 +120,27 @@ public class IdleController : MonoBehaviour {
 		else {
 			temp.a += fogSpeed;
 			return temp;
+		}
+	}
+	
+	void ShiftMusic(AudioSource source) {
+		//if PlayerWhite is idling, pan the music towards the left.
+		if (player.transform.position.x > 0) {
+			//if the music is already panned towards the right (in that PlayerBlack has idled before PlayerWhite),
+			//lower the volume instead.
+			if (source.pan > 0)
+				source.volume = Mathf.Round((source.volume-.005f) * 1000f) / 1000f;
+			else
+				source.pan = Mathf.Round((source.pan-fogSpeed) * 100f) / 100f;
+			}
+		//if PlayerBlack is idling pan the music towards the right.
+		else {
+			//if the music is already panned towards the left (in that PlayerWhite has idled before PlayerBlack),
+			//lower the volume instead.
+			if (source.pan < 0)
+				source.volume = Mathf.Round((source.volume-.005f) * 1000f) / 1000f;
+			else
+				source.pan = Mathf.Round((source.pan+fogSpeed) * 100f) / 100f;
 		}
 	}
 

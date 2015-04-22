@@ -45,7 +45,11 @@ public class PlayMusic : MonoBehaviour {
 		}
 		//if the AudioListener's volume goes down to a certain point, stop playing.
 		//the AudioListener's volume is lowered as the level changes
-		if (AudioListener.volume < 0.1f)
-			loop.Stop ();
+		if (AudioListener.volume < 0.2f) {
+			if (intro != null && intro.isPlaying)
+				intro.Stop();
+			if (loop.isPlaying)
+				loop.Stop();
+		}
 	}
 }
