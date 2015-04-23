@@ -69,7 +69,7 @@ public class EnemySpawnerController : MonoBehaviour {
 
 	//Regular spawn
 	void Spawn(float speed) {
-		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+		GameObject child = (GameObject)Instantiate(enemyPrefab, transform.position, transform.rotation);
 		Init(child.GetComponent<EnemyController>(), speed);
 	}
 	

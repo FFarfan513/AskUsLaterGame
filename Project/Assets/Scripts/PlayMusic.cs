@@ -37,7 +37,7 @@ public class PlayMusic : MonoBehaviour {
 		}
 	}
 	
-	void FixedUpdate () {
+	void Update () {
 		//if the intro is playing and it's getting near the end, play loop.
 		if (!looping && !noIntro && (intro.timeSamples >= length-offset)) {
 			loop.Play ();
