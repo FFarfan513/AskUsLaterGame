@@ -34,7 +34,7 @@ public class EnemyMissile : MonoBehaviour {
 
 		if (controller.GetState() != EnemyController.State.Paralyzed &&
 		    controller.GetState() != EnemyController.State.HasSight) {
-			if (controller.CanSeeIt(transform.position+transform.up)) {
+			if (controller.CanSeeIt(transform.position+(transform.up*initialSpeed))) {
 				FaceMe();
 			}
 			controller.SetState(EnemyController.State.HasSight);

@@ -77,4 +77,7 @@ public class GoalController : MonoBehaviour {
 	public void Reset() {
 		goalReached = false;
 	}
+	public void SetTrue() {
+		goalReached = true;
+	}
 }

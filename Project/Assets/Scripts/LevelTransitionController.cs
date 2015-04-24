@@ -17,6 +17,7 @@ public class LevelTransitionController : MonoBehaviour {
 
 	private float yscale;
 	private bool giveUp;
+	private bool fading;
 	
 	void Awake() {
 		//Set up the goals
@@ -68,6 +69,7 @@ public class LevelTransitionController : MonoBehaviour {
 	
 	//Slows down time for a bit and fades the volume down.
 	IEnumerator Fading(bool alive) {
+		fading = true;
 		Time.timeScale = 0.2f;
 		for (int i=0; i<20; i++) {
 			AudioListener.volume = Mathf.Round((AudioListener.volume-0.05f) * 100f) / 100f;
@@ -88,18 +90,25 @@ public class LevelTransitionController : MonoBehaviour {
 	}
 
 	public void DecrementHP() {
-		if (HP == 1) {
-			GameObject.Destroy(healthZero);
+		if (!fading) {
+			if (HP == 1) {
+				GameObject.Destroy(healthZero);
+			}
+			else if (HP > 1) {
+				GameObject.Destroy(healthBarUp[HP]);
+				GameObject.Destroy(healthBarDown[HP]);
+			}
+			HP--;
+			if (HP == 0) { // Gameover -> Continue Scene
+				HP = -1;
+				StartCoroutine(Fading(false));
+			}
 		}
-		else if (HP > 1) {
-			GameObject.Destroy(healthBarUp[HP]);
-			GameObject.Destroy(healthBarDown[HP]);
-		}
-		HP--;
-		if (HP == 0) { // Gameover -> Continue Scene
-			HP = -1;
-			StartCoroutine(Fading(false));
-		}
+	}
+
+	public void Next() {
+		g1.SetTrue();
+		g2.SetTrue();
 	}
 
 }

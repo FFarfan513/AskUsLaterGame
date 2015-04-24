@@ -193,3 +193,7 @@ Also made the damage taking sound a little louder, since I could barely hear it 
 Did two tiny things. I made it so that enemies that spawn have the spawner's rotation. This is really only helpful when placing missiles. Since I did that change earlier with missiles now facing upwards instead of to the right, and levelHi was designed to have missiles face the right when spawned, I had to fix it. It's fine now.
 Also I noticed a bug, where the music would not move on to the loop section if it was playing the intro, while paused. That had to do with the fact that the music playing was in FixedUpdate, and when paused, the game's timeScale is 0, so it didn't run the playMusic's FixedUpdate while paused. I changed that.
 I also accidentally pushed ContinueController.cs onto GitHub last time when I didn't mean to. You can ignore that.
+
+4/24 - Fristian
+New Level LevelBox. It'll go between LevelHi and LevelGauntlet.
+Also added a Tile screen. For now it's not using buttons, but I'll probably change it. Or maybe not I don't know.
