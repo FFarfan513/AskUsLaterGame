@@ -4,14 +4,14 @@ using System.Collections;
 public class TitleController : MonoBehaviour {
 	private LevelTransitionController main;
 	public AudioClip click;
-	private static bool loading, inTutorial;
+	private static bool loading;
+	private bool inTutorial, inCredits;
 
 	private AudioSource source;
 	private float lowPitch = 0.9f, highPitch = 1.1f;
 
 	void Start() {
 		loading = false;
-		inTutorial = false;
 		main = Camera.main.GetComponent<LevelTransitionController>();
 		source = Camera.main.GetComponent<AudioSource>();
 	}
@@ -19,6 +19,9 @@ public class TitleController : MonoBehaviour {
 	void Update() {
 		if (inTutorial && this.name == "Help") {
 			Tutorial();
+		}
+		else if (inCredits && this.name == "Credits") {
+			Credits();
 		}
 	}
 
@@ -36,7 +39,8 @@ public class TitleController : MonoBehaviour {
 				Camera.main.transform.position = cam;
 			}
 			if (this.name == "Credits") {
-				print("Made by me\n");
+				inCredits = true;
+				Camera.main.transform.position = new Vector3(-20,-40,-10);
 			}
 		}
 	}
@@ -54,6 +58,20 @@ public class TitleController : MonoBehaviour {
 			camTemp.x = 0;
 			camTemp.y = 0;
 			inTutorial = false;
+		}
+		
+		Camera.main.transform.position = camTemp;
+	}
+	
+	void Credits() {
+		Vector3 camTemp = Camera.main.transform.position;
+		if(Input.GetMouseButtonDown (0) || Input.GetMouseButtonDown(1) )
+			camTemp.x += 20;
+		
+		if(camTemp.x > 1) {
+			camTemp.x = 0;
+			camTemp.y = 0;
+			inCredits = false;
 		}
 		
 		Camera.main.transform.position = camTemp;

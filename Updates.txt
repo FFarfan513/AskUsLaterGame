@@ -197,3 +197,6 @@ I also accidentally pushed ContinueController.cs onto GitHub last time when I di
 4/24 - Fristian
 New Level LevelBox. It'll go between LevelHi and LevelGauntlet.
 Also added a Tile screen. For now it's not using buttons, but I'll probably change it. Or maybe not I don't know.
+
+4/24 - Fristian again
+Fleshed out Title and Continue screen. Fully functional now!
