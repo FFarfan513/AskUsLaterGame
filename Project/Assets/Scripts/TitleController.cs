@@ -23,6 +23,9 @@ public class TitleController : MonoBehaviour {
 		else if (inCredits && this.name == "Credits") {
 			Credits();
 		}
+		if (Input.GetKey("escape")) {
+			Application.Quit();
+		}
 	}
 
 	void OnMouseDown() {

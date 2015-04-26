@@ -7,6 +7,12 @@ public class ContinueController : MonoBehaviour {
 	void Start() {
 		continuing = false;
 	}
+	
+	void Update() {
+		if (Input.GetKey("escape")) {
+			Application.Quit();
+		}
+	}
 
 	void OnMouseDown() {
 		if (!continuing) {

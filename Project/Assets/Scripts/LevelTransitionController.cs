@@ -61,7 +61,7 @@ public class LevelTransitionController : MonoBehaviour {
 			g2.Reset();
 			StartCoroutine(Fading(true));
 		}
-		if (Input.GetKeyDown("escape") && Time.timeScale == 1f && !giveUp) {
+		if (Input.GetKeyDown("escape") && Time.timeScale == 1f && !giveUp && thisLevel != 0) {
 			giveUp = true;
 			StartCoroutine(Fading(false));
 		}
