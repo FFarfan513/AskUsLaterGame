@@ -12,6 +12,7 @@ public class EnemyRotater : MonoBehaviour {
 	}
 	
 	void Update () {
+		//If this enemy is not paralyzed, check for sight.
 		if (controller.GetState() != EnemyController.State.Paralyzed) {
 			if (controller.CanSeeIt(transform.position))
 				controller.SetState(EnemyController.State.HasSight);
@@ -22,10 +23,12 @@ public class EnemyRotater : MonoBehaviour {
 		switch (controller.GetState())
 		{
 		case EnemyController.State.HasSight:
+			//If this enemy has sight, it rotates faster and seeks towards the player
 			Rotate(aggressiveRotateSpeed);
 			transform.position = controller.DumbSeek(transform.position, controller.followMe.transform.position);
 			break;
 		case EnemyController.State.Idle:
+			//If it doesn't have sight, it rotates slowly in place
 			Rotate(calmRotateSpeed);
 			break;
 		case EnemyController.State.NoSight:

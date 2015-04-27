@@ -9,6 +9,8 @@ public class IdleController : MonoBehaviour {
 	//musicVolume should be the same for both intro and loop.
 	private float musicVolume;
 
+	private List<RaycastHit2D[]> edges;
+
 	private bool isIdle;
 	private int idleCount;
 	public GameObject fog;
@@ -49,7 +51,7 @@ public class IdleController : MonoBehaviour {
 				idleCount++;
 			}
 			//once the idle time hits a certain point, we speed up the enemies on this side of the screen.
-			if (idleCount == waitTime+1) {
+			if (idleCount == waitTime+4) {
 				SpeedUpVisibleEnemies();
 			}
 			//If we're idling past this point, fog up our screen.
@@ -156,17 +158,18 @@ public class IdleController : MonoBehaviour {
 
 	//spawns enemies at nodes located at the edges of the screen if available
 	void SpawnEnemies() {
-		Vector3 bottomLeft  = cam.ViewportToWorldPoint(new Vector3(0.1f,0.1f,CenterOn.cameraZ));
-		Vector3 topLeft     = cam.ViewportToWorldPoint(new Vector3(0.1f,0.9f,CenterOn.cameraZ));
-		Vector3 topRight    = cam.ViewportToWorldPoint(new Vector3(0.9f,0.9f,CenterOn.cameraZ));
-		Vector3 bottomRight = cam.ViewportToWorldPoint(new Vector3(0.9f,0.1f,CenterOn.cameraZ));
+		Vector3 botLeft  = cam.ViewportToWorldPoint(new Vector3(0.1f,0.1f,CenterOn.cameraZ));
+		Vector3 topLeft  = cam.ViewportToWorldPoint(new Vector3(0.1f,0.9f,CenterOn.cameraZ));
+		Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(0.9f,0.9f,CenterOn.cameraZ));
+		Vector3 botRight = cam.ViewportToWorldPoint(new Vector3(0.9f,0.1f,CenterOn.cameraZ));
 
-		List<RaycastHit2D[]> edges = new List<RaycastHit2D[]>();
-		edges.Add (Physics2D.CircleCastAll (bottomLeft,1f,(bottomRight-bottomLeft),(bottomRight-bottomLeft).magnitude,n));
-		edges.Add (Physics2D.CircleCastAll (bottomLeft,1f,(topLeft-bottomLeft),(topLeft-bottomLeft).magnitude,n));
-		edges.Add (Physics2D.CircleCastAll (topRight,1f,(topLeft-topRight),(topLeft-topRight).magnitude,n));
-		edges.Add (Physics2D.CircleCastAll (topRight,1f,(bottomRight-topRight),(bottomRight-topRight).magnitude,n));
+		edges = new List<RaycastHit2D[]>(4);
+		edges.Add (Physics2D.CircleCastAll(botLeft, 1f,(botRight-botLeft), (botRight-botLeft).magnitude, n));
+		edges.Add (Physics2D.CircleCastAll(botLeft, 1f,(topLeft-botLeft),  (topLeft-botLeft).magnitude,  n));
+		edges.Add (Physics2D.CircleCastAll(topRight,1f,(topLeft-topRight), (topLeft-topRight).magnitude, n));
+		edges.Add (Physics2D.CircleCastAll(topRight,1f,(botRight-topRight),(botRight-topRight).magnitude,n));
 
+		//for each screen edge, choose a random node along that edge and spawn an enemy there.
 		foreach (var edge in edges) {
 			if (edge.Length > 0) {
 				int r = Mathf.FloorToInt(Random.Range (0,edge.Length));

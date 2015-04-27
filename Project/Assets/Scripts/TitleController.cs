@@ -10,19 +10,34 @@ public class TitleController : MonoBehaviour {
 	private AudioSource source;
 	private float lowPitch = 0.9f, highPitch = 1.1f;
 
+	private bool playButton = false, helpButton = false, creditsButton = false;
+
 	void Start() {
+		if (this.name == "Play") {
+			playButton = true;
+		}
+		else if (this.name == "Help") {
+			helpButton = true;
+		}
+		else if (this.name == "Credits") {
+			creditsButton = true;
+		}
+
 		loading = false;
 		main = Camera.main.GetComponent<LevelTransitionController>();
 		source = Camera.main.GetComponent<AudioSource>();
 	}
 
+	//Pressing the Help button 
 	void Update() {
-		if (inTutorial && this.name == "Help") {
+		if (inTutorial && helpButton) {
 			Tutorial();
 		}
-		else if (inCredits && this.name == "Credits") {
+		else if (inCredits && creditsButton) {
 			Credits();
 		}
+
+		//quits the game, if in the main menu
 		if (Input.GetKey("escape")) {
 			Application.Quit();
 		}
@@ -32,16 +47,16 @@ public class TitleController : MonoBehaviour {
 		if (!loading) {
 			source.pitch = Random.Range (lowPitch, highPitch);
 			source.PlayOneShot(click);
-			if (this.name == "Play") {
-				main.Next ();
+			if (playButton) {
+				main.Next();
 				loading = true;
 			}
-			if (this.name == "Help") {
+			else if (helpButton) {
 				inTutorial = true;
 				Vector3 cam = new Vector3(-20,40,-10);
 				Camera.main.transform.position = cam;
 			}
-			if (this.name == "Credits") {
+			else if (creditsButton) {
 				inCredits = true;
 				Camera.main.transform.position = new Vector3(-20,-40,-10);
 			}
@@ -49,7 +64,6 @@ public class TitleController : MonoBehaviour {
 	}
 
 	void Tutorial() {
-
 		Vector3 camTemp = Camera.main.transform.position;
 
 		if(Input.GetMouseButtonDown (0))
@@ -68,6 +82,7 @@ public class TitleController : MonoBehaviour {
 	
 	void Credits() {
 		Vector3 camTemp = Camera.main.transform.position;
+
 		if(Input.GetMouseButtonDown (0) || Input.GetMouseButtonDown(1) )
 			camTemp.x += 20;
 		

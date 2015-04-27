@@ -21,7 +21,7 @@ public class PlayMusic : MonoBehaviour {
 			//if loop has it's playOnAwake on, set it off and stop it.
 			if (loop.playOnAwake) {
 				loop.playOnAwake = false;
-				loop.Stop ();
+				loop.Stop();
 			}
 			//Play the intro if it's not playing by itself
 			length = intro.clip.samples;
@@ -31,7 +31,7 @@ public class PlayMusic : MonoBehaviour {
 		else {
 			//if there's no intro, play loop.
 			if (!loop.playOnAwake) {
-				loop.Play ();
+				loop.Play();
 				looping = true;
 			}
 		}
@@ -40,7 +40,7 @@ public class PlayMusic : MonoBehaviour {
 	void Update () {
 		//if the intro is playing and it's getting near the end, play loop.
 		if (!looping && !noIntro && (intro.timeSamples >= length-offset)) {
-			loop.Play ();
+			loop.Play();
 			looping = true;
 		}
 	}

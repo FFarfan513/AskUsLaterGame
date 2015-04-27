@@ -34,14 +34,16 @@ public class EnemySpawnerController : MonoBehaviour {
 				}
 			}
 		}
-		transform.localScale = new Vector3(spawnRange+3,spawnRange+3,0);
+		//transform.localScale = new Vector3(spawnRange+3,spawnRange+3,0);
 	}
 	
 	void FixedUpdate () {
+		/*
 		if (Input.GetKeyDown(KeyCode.X)) {
 			SpriteRenderer s = gameObject.GetComponent<SpriteRenderer>();
 			s.enabled = !s.enabled;
 		}
+		*/
 	
 		// Recalculate distance to player every Update
 		myDistance = Vector3.Distance(transform.position, followThis.transform.position);
@@ -80,6 +82,7 @@ public class EnemySpawnerController : MonoBehaviour {
 		c.frozenSeconds = myFrozenSeconds;
 	}
 
+	//returns true if the spawnwer is far enough away from the edges of the screen
 	bool NotNearScreen() {
 		//The bottom-left of the camera is (0,0); the top-right is (1,1).
 		Vector3 relativePos = cam.WorldToViewportPoint(transform.position);

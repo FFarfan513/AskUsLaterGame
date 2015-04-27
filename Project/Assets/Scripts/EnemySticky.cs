@@ -13,6 +13,7 @@ public class EnemySticky : MonoBehaviour {
 	}
 
 	void Update () {
+		//Moves if it canMove, and if it's not paralyzed
 		if (canMove && controller.GetState() != EnemyController.State.Paralyzed) {
 			followPos = controller.followMe.transform.position;
 			transform.position = controller.DumbSeek(transform.position, followPos);

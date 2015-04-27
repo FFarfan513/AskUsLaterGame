@@ -57,10 +57,12 @@ public class LevelTransitionController : MonoBehaviour {
 	//If both goals have been reached, reset them and start fading to the next level
 	void Update() {
 		if (g1!=null && g2 !=null && g1.Reached() && g2.Reached() ) {
-			g1.Reset();
-			g2.Reset();
+			g1.Set(false);
+			g2.Set(false);
 			StartCoroutine(Fading(true));
 		}
+
+		//Press escape to give up!
 		if (Input.GetKeyDown("escape") && Time.timeScale == 1f && !giveUp && thisLevel != 0) {
 			giveUp = true;
 			StartCoroutine(Fading(false));
@@ -107,8 +109,8 @@ public class LevelTransitionController : MonoBehaviour {
 	}
 
 	public void Next() {
-		g1.SetTrue();
-		g2.SetTrue();
+		g1.Set(true);
+		g2.Set(true);
 	}
 
 }

@@ -1,2 +1,2 @@
-# AskUsLaterGame
-Final Project in stages
+# Dichotomy
+AskUsLater Final Project

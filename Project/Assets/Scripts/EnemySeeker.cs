@@ -15,6 +15,7 @@ public class EnemySeeker : MonoBehaviour {
 	}
 	
 	void Update() {
+		//If this enemy is not paralyzed, check for sight.
 		if (controller.GetState() != EnemyController.State.Paralyzed) {
 			if (controller.CanSeeIt(transform.position))
 				controller.SetState(EnemyController.State.HasSight);
@@ -26,10 +27,14 @@ public class EnemySeeker : MonoBehaviour {
 		switch (controller.GetState())
 		{
 		case EnemyController.State.HasSight:
-			path.Clear ();
+			//If it has sight, dumb seek towards the player.
+			if (path.Count > 0)
+				path.Clear ();
 			transform.position = controller.DumbSeek(transform.position, followPos);
 			break;
 		case EnemyController.State.NoSight:
+			//If it doesn't have sight, start an A* search from the closest node to
+			//this enemy's position, and followMe's position
 			int youMoved = -1, start, end;
 			Collider2D myNode = controller.FindNodeNearXClosestToY(transform.position, followPos);
 			Collider2D targetNode = controller.FindNodeNearXClosestToY(followPos, followPos);
@@ -58,14 +63,18 @@ public class EnemySeeker : MonoBehaviour {
 
 	void MoveThroughPath() {
 		//this function always moves to the last node in the path, and removes it when it reaches it.
-		if (path.Count>0) {
+		if (path.Count > 0) {
 			int step = path[path.Count-1];
-			////Vector3 dest = GenerateGraph.nodeVectors[step];
 			Vector3 dest;
-			GenerateGraph.nodes.TryGetValue (step, out dest);
-			transform.position = controller.DumbSeek(transform.position, dest);
-			if (Vector3.Distance(transform.position, dest) < 0.1f)
-				path.RemoveAt(path.Count-1);
+			if (GenerateGraph.nodes.TryGetValue (step, out dest)) {
+				transform.position = controller.DumbSeek(transform.position, dest);
+				if (Vector3.Distance(transform.position, dest) < 0.1f)
+					path.RemoveAt(path.Count-1);
+			}
+		}
+		
+		else if (path.Count == 0) {
+			controller.SetState(EnemyController.State.HasSight);
 		}
 	}
 

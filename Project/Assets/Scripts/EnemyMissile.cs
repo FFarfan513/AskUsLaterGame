@@ -32,20 +32,25 @@ public class EnemyMissile : MonoBehaviour {
 			break;
 		}
 
+		//If this enemy is not paralyzed or if it doesn't already have sight, check for sight.
 		if (controller.GetState() != EnemyController.State.Paralyzed &&
 		    controller.GetState() != EnemyController.State.HasSight) {
+			//If it does have sight, it faces the target.
 			if (controller.CanSeeIt(transform.position+(transform.up*initialSpeed))) {
 				FaceMe();
 			}
+			//Either way, it locks it's position and heads in that direction
 			controller.SetState(EnemyController.State.HasSight);
 		}
 	}
 
+	//rotates the missile towards followMe
 	void FaceMe() {
 		Vector3 dir = followMe.transform.position - transform.position;
 		transform.rotation = Quaternion.LookRotation(Vector3.forward,dir);
 	}
 
+	//Constantly moves the missile forward, increasing by an optional acceleration
 	void MissileTowards() {
 		controller.moveSpeed += accel;
 		Vector3 movin = transform.up*controller.moveSpeed*Time.deltaTime;

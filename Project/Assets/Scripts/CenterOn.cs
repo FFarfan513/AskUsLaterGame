@@ -4,7 +4,8 @@ using System.Collections;
 public class CenterOn : MonoBehaviour {
 	public GameObject character;
 	private Camera cam;
-	MoveTo ch;
+	private MoveTo ch;
+	
 	//This matches the camera's Z in unity
 	public static float cameraZ;
 	
@@ -32,19 +33,18 @@ public class CenterOn : MonoBehaviour {
 		Vector3 relativePos = cam.WorldToViewportPoint(character.transform.position);
 		Vector3 moveDirection = ch.getHeading();
 
-		//if your position relative to the screen is past a certain point, start moving the camera
-		Vector3 horiz = new Vector3(moveDirection.x,0,0);
-		Vector3 vert = new Vector3(0,moveDirection.y,0);
-
-		//The screen will translate in the same direction as the heading, at the same speed,
-		//but will only move in that direction if the movedirection is also heading in that direction
+		//if your position relative to the screen is past a certain point, start moving the camera.
+		//The screen will translate in the same direction as the player's heading, at the same speed,
+		//but will only move in that direction if the movedirection is also heading in that direction.
 		if ((relativePos.x > xMax && moveDirection.x > 0) ||
 		    (relativePos.x < xMin && moveDirection.x < 0)) {
+			Vector3 horiz = new Vector3(moveDirection.x,0,0);
 			transform.Translate(horiz*speed*Time.deltaTime);
 		}
 
 		if ((relativePos.y > yMax && moveDirection.y > 0) ||
 		    (relativePos.y < yMin && moveDirection.y < 0)) {
+			Vector3 vert = new Vector3(0,moveDirection.y,0);
 			transform.Translate(vert*speed*Time.deltaTime);
 		}
 	}

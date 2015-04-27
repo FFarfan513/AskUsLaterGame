@@ -3,9 +3,10 @@ using System.Collections;
 
 public class GoalController : MonoBehaviour {
 
-	private GameObject player;
+	private string playerTag;
 	private bool goalReached = false;
-	public float turnSpeed;
+	private float turnSpeed = 0.25f;
+	private float initialTurnSpeed;
 	public GameObject wallToRemove;
 
 	public AudioClip unlockSound;
@@ -13,27 +14,31 @@ public class GoalController : MonoBehaviour {
 	private float lowPitch = 1f, highPitch = 1.04f;
 	
 	void Start() {
-		player = FindPlayer();
 		onGoal = this.GetComponent<AudioSource>();
-		if (transform.position.x > 0)
+		if (transform.position.x > 0) {
+			playerTag = "PlayerWhite";
 			onGoal.pan = 0.2f;
-		else
+		}
+		else {
+			playerTag = "PlayerBlack";
 			onGoal.pan = -0.2f;
+		}
 	}
 
 	void Update() {
 		Rotate();
-		//Let's us skip levels for testing transitions by pressing S
+		/*
 		if (Input.GetKeyDown (KeyCode.S))
 			goalReached = true;
-
+		*/
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
-		if (other.tag == player.tag) {
+		if (other.tag == playerTag) {
 			//if goal
 			if (wallToRemove == null) {
 				goalReached = true;
+				initialTurnSpeed = turnSpeed;
 				turnSpeed *= 5f;
 			}
 			//if switch
@@ -47,16 +52,16 @@ public class GoalController : MonoBehaviour {
 
 	//Make the ambient noise as the player stays in the goal circle
 	void OnTriggerStay2D( Collider2D other ) {
-		if (other.tag == player.tag && !onGoal.isPlaying) {
+		if (other.tag == playerTag && !onGoal.isPlaying) {
 			onGoal.pitch = Random.Range (lowPitch, highPitch);
 			onGoal.Play();
 		}
 	}
 	
 	void OnTriggerExit2D( Collider2D other ) {
-		if (other.tag == player.tag) {
+		if (other.tag == playerTag) {
 			goalReached = false;
-			turnSpeed /= 5f;
+			turnSpeed = initialTurnSpeed;
 		}
 	}
 
@@ -64,20 +69,10 @@ public class GoalController : MonoBehaviour {
 		transform.Rotate(Vector3.forward * turnSpeed * 50 * Time.deltaTime);
 	}
 
-	private GameObject FindPlayer() {
-		if (transform.position.x < 0)
-			return GameObject.FindWithTag("PlayerBlack");
-		else
-			return GameObject.FindWithTag("PlayerWhite");
-	}
-
 	public bool Reached() {
 		return goalReached;
 	}
-	public void Reset() {
-		goalReached = false;
-	}
-	public void SetTrue() {
-		goalReached = true;
+	public void Set(bool set) {
+		goalReached = set;
 	}
 }

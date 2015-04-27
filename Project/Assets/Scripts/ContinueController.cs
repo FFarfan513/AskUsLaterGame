@@ -3,8 +3,15 @@ using System.Collections;
 
 public class ContinueController : MonoBehaviour {
 	private static bool continuing;
+	private bool continueButton = false, mainMenuButton = false;
 	
 	void Start() {
+		if (this.name == "Continue") {
+			continueButton = true;
+		}
+		else if (this.name == "MainMenu") {
+			mainMenuButton = true;
+		}
 		continuing = false;
 	}
 	
@@ -15,12 +22,14 @@ public class ContinueController : MonoBehaviour {
 	}
 
 	void OnMouseDown() {
+		//if the Continue button is pressed, reload thisLevel.
+		//if the MainMenu button is pressed, load the title (scene 0).
 		if (!continuing) {
-			if (this.name == "Continue") {
-				Application.LoadLevel (LevelTransitionController.thisLevel);
+			if (continueButton) {
+				Application.LoadLevel(LevelTransitionController.thisLevel);
 			}
-			if (this.name == "MainMenu") {
-				Application.LoadLevel (0);
+			if (mainMenuButton) {
+				Application.LoadLevel(0);
 			}
 		}
 	}

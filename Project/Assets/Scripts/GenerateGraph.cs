@@ -17,7 +17,7 @@ public class GenerateGraph : MonoBehaviour {
 	private List<int> connections;
 	private int ID = 0;
 	
-	private bool showMe;
+	//private bool showMe;
 	private LayerMask noNodes;
 	private bool paused;
 	private float musicVol;
@@ -103,6 +103,7 @@ public class GenerateGraph : MonoBehaviour {
 		}
 	}
 
+	/*
 	void OnDrawGizmos() {
 		//This draws the paths between the nodes.
 		if (showMe) {
@@ -118,10 +119,13 @@ public class GenerateGraph : MonoBehaviour {
 			}
 		}
 	}
+	*/
 	
 	void Update() {
+		/*
 		if (Input.GetKeyDown(KeyCode.Z))
 			showMe = !showMe;
+		*/	
 		if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.P)) && Time.timeScale==1f) {
 			musicVol = AudioListener.volume;
 			AudioListener.volume /= 3f;

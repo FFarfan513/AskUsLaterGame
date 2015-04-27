@@ -16,8 +16,11 @@ public class MoveTo : MonoBehaviour {
 	public GameObject destroyRingPrefab;
 	private readonly float rippleSpeed = 0.4f;
 	private float count;
+	private bool isPlayerBlack = false;
 
 	void Start () {
+		if (transform.position.x < 0)
+			isPlayerBlack = true;
 		count = 0f;
 		currentPosition = transform.position;
 	}
@@ -38,9 +41,11 @@ public class MoveTo : MonoBehaviour {
 				transform.position = moveHere;
 				if (isMoving)
 					isMoving = false;
+				//makes a ripple when we stop moving, if a ripple hasn't already been made very recently
 				if (count <= 0.2f)
 					Ripple();
 			}
+			//else, move towards the target like normal.
 			else {
 				Vector3 target = heading * moveSpeed + currentPosition;
 				transform.position = Vector3.Lerp(currentPosition, target, Time.deltaTime);
@@ -85,15 +90,17 @@ public class MoveTo : MonoBehaviour {
 		//This is so that in case the game thinks we've already "entered" the wall, and it won't trigger the OnCollisionEnter method
 		followMe.transform.position = transform.position;
 	}
-	
+
+	//Create the ripple animation at the current position.
 	 void Ripple() {
 		if (ripplePrefab!=null) {
 			GameObject rip = Instantiate(ripplePrefab, transform.position, Quaternion.identity) as GameObject;
-			if (this.tag == "PlayerBlack")
+			if (isPlayerBlack)
 				rip.GetComponent<SpriteRenderer>().color = new Color(15/255f,15/255f,15/255f);
 		}
 	}
 
+	//Create the destroy ring animation at the current position
 	void DestroyRing() {
 		if (destroyRingPrefab!=null)
 			Instantiate(destroyRingPrefab, transform.position, Quaternion.identity);

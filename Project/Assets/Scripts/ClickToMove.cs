@@ -28,12 +28,6 @@ public class ClickToMove : MonoBehaviour {
 		if (Time.timeScale == 1) {
 			//once the mouseButton is pressed, the object goes directly to that position
 			if (Input.GetMouseButtonDown(mouseButton)) {
-				//If this is the first click, get the idleController started
-				if (!idler.Started())
-					idler.Go();
-				mousePos = Input.mousePosition;
-				mousePos.z=distanceFromCamera;
-				relativeMouse = cam.ScreenToViewportPoint(mousePos);
 
 				if (WithinScreen()) {
 					if (idler.GetIsIdle())
@@ -44,12 +38,6 @@ public class ClickToMove : MonoBehaviour {
 			}
 			//if the other mouse button was pressed, see if there is an enemy you can neutralize there
 			else if (Input.GetMouseButtonDown((mouseButton+1)%2)) {
-				//If this is the first click, get the idleController started
-				if (!idler.Started())
-					idler.Go();
-				mousePos = Input.mousePosition;
-				mousePos.z=distanceFromCamera;
-				relativeMouse = cam.ScreenToViewportPoint(mousePos);
 
 				if (WithinScreen()) {
 					//Perform a raycast from your click position directly through the scene
@@ -74,7 +62,14 @@ public class ClickToMove : MonoBehaviour {
 		}
 	}
 
+	//checks if the click was within the borders of the camera
 	bool WithinScreen() {
+		//If this is the first click, get the idleController started
+		if (!idler.Started())
+			idler.Go();
+		mousePos = Input.mousePosition;
+		mousePos.z=distanceFromCamera;
+		relativeMouse = cam.ScreenToViewportPoint(mousePos);
 		return (relativeMouse.x<=1.0 && relativeMouse.x>=0);
 	}
 

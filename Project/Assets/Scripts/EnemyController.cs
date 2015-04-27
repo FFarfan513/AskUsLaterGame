@@ -42,7 +42,6 @@ public class EnemyController : MonoBehaviour {
 	public AudioClip killSound;
 	private float lowPitch = 0.7f, highPitch = 1.1f;
 
-	//Each enemy knows which side it's on
 	void Start() {
 		me = State.Idle;
 		render = gameObject.GetComponent<SpriteRenderer>();
@@ -50,6 +49,7 @@ public class EnemyController : MonoBehaviour {
 		originalColor = render.color;
 		initialSpeed = moveSpeed;
 
+		//Each enemy knows which side it's on
 		if (transform.position.x < 0) {
 			playerTag = "PlayerBlack";
 		}
@@ -57,6 +57,8 @@ public class EnemyController : MonoBehaviour {
 			playerTag = "PlayerWhite";
 		}
 
+		//if this enemy is following the player, then playerObj is the followMe object.
+		//if not, it will have to find it.
 		if (followMe.tag == playerTag) {
 			playerObj = followMe;
 		}
@@ -204,9 +206,9 @@ public class EnemyController : MonoBehaviour {
 		}
 	}
 
+	//plays the freeze animation and freezes this enemy.
 	public void Neutralize() {
-		GameObject fr = Instantiate(freezePrefab, transform.position, Quaternion.identity) as GameObject;
-		fr.transform.rotation = this.transform.rotation;
+		Instantiate(freezePrefab, transform.position, transform.rotation);
 		frozenCountdown = Mathf.FloorToInt(frozenSeconds*60);
 		me = State.Paralyzed;
 		render.color = frozenColor;
